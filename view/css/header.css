@@ -1,0 +1,142 @@
+header {
+    justify-content: space-between;
+    padding: 20px;
+    min-width: 320px;
+    cursor: default;
+
+    & a {
+        color: var(--preto);
+        padding: 2px 3px;
+    }
+
+    & ul {
+        gap: 20px;
+        font-size: 0.9vw;
+    }
+
+    & ul > li {
+        padding: 2px;
+        width: 100%;
+    }
+
+    & nav > ul > li a:hover {
+        border-bottom: 2px solid var(--preto);
+    }
+}
+
+
+.li-menu {
+    display: none;
+}
+
+
+#icon-carrinho {
+    margin-right: 5px;
+}
+
+
+.icon {
+    width: 2vw;
+    padding: 2px;
+    cursor: pointer;
+}
+
+
+.li-login-cadastro {
+    position: relative;
+}
+
+
+.li-carrinho, .li-login-cadastro {
+    min-width: max-content;
+}
+
+
+.drop-down {
+    display: flex;
+    align-items: center;
+    max-width: max-content;
+    gap: 0;
+
+    & li {
+        padding: 0;
+        max-width: max-content;
+    }
+
+    & li:nth-child(2) {
+        cursor: pointer;
+    }
+
+    & li > a:hover {
+        border-bottom: 2px solid var(--preto);
+    }
+}
+
+
+.dialog-menu {
+    justify-self: right;
+    padding: 4vw;
+    border: 0;
+    /* height: 100vh; */
+    
+    & ul {
+        display: flex;
+        flex-direction: column;
+        gap: 2vw;
+        /* height: 100vh; */
+        margin-top: 2vw;
+    }
+
+    & img {
+        position: absolute;
+        width: 3vw;
+        top: 5%;
+        right: 10%;
+        min-width: 10px;
+        max-width: 20px;
+    }
+}
+
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1440px) {
+    header {
+        padding: 10px;
+
+        & ul {
+            gap: 5px;
+            font-size: 12px;
+        }
+    }
+}
+
+
+@media (max-width: 1150px) {
+    .li-menu {
+        display: flex;
+    }
+
+    nav {
+        display: none;
+    }
+
+    .icon {
+        min-width: 25px;
+    }
+}
+
+
+@media (max-width: 515px) {
+    header {
+        padding: 10px 3px;
+
+        & ul {
+            gap: 3px;
+        }
+    }
+
+    .drop-down {
+        display: none;
+    }
+}

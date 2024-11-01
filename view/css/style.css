@@ -1,0 +1,30 @@
+@import "./root.css";
+@import "./util.css";
+@import "./header.css";
+@import "./section-banner-slides.css";
+@import "./section-produtos.css";
+@import "./section-info-pagamento.css";
+@import "./section-grid-itens.css";
+@import "./section-banner-fixo.css";
+@import "./section-depoimentos.css";
+@import "./footer.css";
+
+
+/* Geral */
+* {
+    /* font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+li {
+    list-style: none;
+}

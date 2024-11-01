@@ -1,0 +1,228 @@
+@import "./animations.css";
+
+#section-depoimentos {
+    padding: 3vw 0;
+    min-width: 320px;
+}
+
+
+.div-depoimentos {
+    padding: 3vw;
+    background-color: var(--preto);
+    color: var(--branco);
+}
+
+
+.topico-depoimentos {
+    text-align: center;
+    font-size: 2vw;
+    display: flex;
+    flex-direction: column;
+
+    & p {
+        font-family: "Great Vibes";
+        font-size: 2vw;
+        word-spacing: .6vw;
+    }
+}
+
+
+.slide-depoimentos {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2vw;
+    margin: 2vw;
+    animation: surgir 2s;
+}
+
+
+.slide-depoimentos-ativo {
+    display: grid;
+}
+
+
+.depoimentos {
+    width: 85%;
+    margin: 0 auto;
+}
+
+
+.depoimento {
+    position: relative;
+    border: .1px solid var(--vermelho-marrom);
+    border-radius: 5px;
+    color: var(--preto);
+    padding: 2vw;
+    display: flex;
+    align-items: end;
+    height: 17vw;
+    background-color: var(--branco);
+    font-weight: bold;
+}
+
+
+.img-cliente {
+    position: absolute;
+    border: .1px solid var(--vermelho-marrom);
+    width: 5vw;
+    top: 2vw;
+    left: 2vw;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+.info-cliente {
+    position: absolute;
+    top: 3vw;
+    right: 3vw;
+    display: flex;
+    flex-direction: column;
+    gap: .8vw;
+    font-size: 1vw;
+    max-width: max-content;
+    justify-content: end;
+    align-items: center;
+
+    & :first-child {
+        color: var(--vermelho-marrom);
+    }
+}
+
+
+#estrelas-depoimento > img {
+    width: 1vw;
+}
+
+
+.texto-depoimento {
+    position: relative;
+    display: flex;
+    padding: 1vw;
+    text-align: center;
+    align-items: center;
+    font-size: 1vw;
+
+    & p {
+        line-height: 1.7vw;
+    }
+
+    & span {
+        font-style: italic;
+    }
+}
+
+
+.aspas-esquerdas {
+    position: absolute;
+    top: -.8vw;
+    left: -.8vw;
+    width: 1.7vw;
+}
+
+
+.aspas-direitas {
+    position: absolute;
+    bottom: -.8vw;
+    right: -.8vw;
+    width: 1.7vw;
+}
+
+
+.botoes-depoimentos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1vw;
+}
+
+
+.btn-depoimento-ativo {
+    width: 3vw;
+    animation: crescer .3s ease;
+}
+
+
+.btn-depoimento {
+    background-color: var(--branco);
+    padding: 6px;
+    border-radius: 10px;
+}
+
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1024px) {
+    .btn-depoimento {
+        padding: 4px;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .btn-depoimento {
+        padding: 2px;
+    }
+
+    .info-cliente, .texto-depoimento > p {
+        font-size: 6px;
+    }
+
+    #estrelas-depoimento > img {
+        width: 6px;
+    }
+
+    .div-depoimentos {
+        padding: 3vw 1vw; 
+    }
+
+    .topico-depoimentos {
+        font-size: 14px;
+    
+        & p {
+            font-size: 14px;
+        }
+    }
+}
+
+
+@media (max-width: 600px) {
+    .slide-depoimentos {
+        margin: 2vw 0;
+    }
+
+    .depoimentos {
+        width: 100%;
+    }
+
+    .img-cliente {
+        width: 30px;
+    }
+
+    .depoimento {
+        height: 20vw;
+    }
+}
+
+
+@media (max-width: 420px) {
+    .slide-depoimentos {
+        gap: 3px;
+    }
+
+    .img-cliente {
+        width: 21px;
+    }
+
+    .div-depoimentos {
+        padding: 3vw 1px;
+    }
+
+    .depoimento {
+        height: 70px;
+    }
+
+    .info-cliente, .texto-depoimento > p {
+        font-size: 5px;
+    }
+} 
