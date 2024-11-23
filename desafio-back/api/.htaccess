@@ -1,0 +1,24 @@
+#Ativa a reescrita de URL no Apache.
+RewriteEngine On 
+
+# :: Redireciona requisições HTTP para HTTPS
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# ::
+
+
+# RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+# RewriteRule ^(.*) - [E=BASE:%1]
+
+# :: Redireciona rotas para o index.php
+#Define a base da URL para a reescrita. Neste caso, a base é o diretório raiz do site (api).
+#RewriteBase / 
+#Aplica a regra apenas se o arquivo solicitado não existir fisicamente no servidor.
+RewriteCond %{REQUEST_FILENAME} !-f 
+#Aplica a regra apenas se o diretório solicitado não existir.
+RewriteCond %{REQUEST_FILENAME} !-d 
+#A regra captura URLs e redireciona para index.php.
+RewriteRule ^ index.php [QSA,L] 
+#As flags no final da regra têm funções específicas: 'L' para 'last' (última regra a ser aplicada) 
+#e 'QSA' para 'Query String Append' (anexa a query string existente ao final da URL reescrita).
+# ::
