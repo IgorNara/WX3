@@ -1,0 +1,30 @@
+{
+    "name": "wx3/ecommerce",
+    "description": "Desafio backend wx3",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "": [
+                "src/",
+                "src/controller",
+                "src/excecoes",
+
+                "src/model",
+                "src/model/categoria",
+                "src/model/cliente",
+                "src/model/endereco",
+                "src/model/produto",
+                "src/model/tamanho-produto",
+                "src/model/venda",
+                "src/model/venda-produto-tamanho"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "IgorNara",
+            "email": "igornaravieira@gmail.com"
+        }
+    ],
+    "require": {}
+}
