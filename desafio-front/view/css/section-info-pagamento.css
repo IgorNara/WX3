@@ -1,0 +1,83 @@
+#section-info-pagamento {
+    background-color: var(--preto);
+    color: var(--branco);
+    padding: 15px;
+    min-width: 320px;
+    cursor: default;
+}
+
+
+#div-info-pagamento {
+    min-width: max-content;
+    display: flex;
+    gap: 60px;
+    justify-content: center;
+}
+
+
+.item-pagamento {
+    text-align: center;
+    font-size: 0.7vw;
+    max-width: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    line-height: 1.7vw;
+    align-items: center;
+
+    & img {
+        width: 5vw;
+    }
+}
+
+
+/* RESPONSIVIDADE  */
+
+@media (max-width: 790px) {
+    #section-info-pagamento {
+        padding: 10px;
+    }
+
+    #div-info-pagamento {
+        gap: 5px;
+        justify-content: space-around;
+    }
+
+    .item-pagamento {
+        font-size: 8px;
+
+        & img {
+            width: 40px;
+        }
+    }
+}
+
+
+@media (max-width: 515px) {
+    .item-pagamento {
+        font-size: 6px;
+
+        & img {
+            width: 30px;
+        }
+    }
+}
+
+
+@media (max-width: 425px) {
+    .item-pagamento {
+        font-size: 5px;
+        line-height: 6px;
+
+        & img {
+            width: 20px;
+        }
+    }
+} 
+
+
+@media (max-width: 375px) {
+    #section-info-pagamento {
+        padding: 10px 5px;
+    }
+}

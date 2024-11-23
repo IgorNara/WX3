@@ -1,0 +1,10 @@
+#section-banner-fixo {
+    min-width: 320px;
+    display: flex;
+    justify-content: center;
+
+    & img {
+        width: 100%;
+        object-fit: contain;
+    }
+}

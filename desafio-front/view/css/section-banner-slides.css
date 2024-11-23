@@ -1,0 +1,69 @@
+@import "./animations.css";
+
+#section-banner-slides {
+    position: relative;
+    min-width: 320px;
+    overflow: hidden;
+    height: 50vh;
+    cursor: default;
+}
+
+
+.div-banner-slides {
+    background-color: var(--cinza);
+    width: 300%;
+    height: 50vh;
+    display: flex;
+
+    & input {
+        display: none;
+    }
+}
+
+
+.banner-slide {
+    background-color: var(--cinza);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: calc( 100% / 3 );
+    height: 100%;
+    animation: passar 0.5s;
+}
+
+
+.banner-slide-ativo {
+    display: flex;
+}
+
+
+.div-btn-banner-slide {    
+    position: absolute;
+    bottom: 5%;
+    right: 50%;
+    transform: translate(50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+
+.btn-banner-slide div {
+    padding: 4px;
+    background-color: var(--branco);
+    border-radius: 50%;
+}
+
+
+.btn-banner-slide {
+    border: 1px solid transparent;
+    border-radius: 50%;
+    padding: 4px;
+    cursor: pointer;
+}
+
+
+.btn-banner-slide-ativo {
+    border-color: var(--branco);
+}
