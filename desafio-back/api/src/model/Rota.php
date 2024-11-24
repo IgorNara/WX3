@@ -4,7 +4,7 @@ declare(strict_types=1);
 class Rota {
     private string $logica;
     private string $metodo;
-    private string $parametro;
+    private array $parametros;
     private Requisicao $req;
     private Array $dados;
 
@@ -12,7 +12,7 @@ class Rota {
         $this->req = new Requisicao( $server );
         $this->logica = $this->req->getLogica();
         $this->metodo = $this->req->getMetodo();
-        $this->parametro = $this->req->getParametros();
+        $this->parametros = $this->req->getParametros();
         $this->dados = $dados;
     }
 
@@ -22,7 +22,7 @@ class Rota {
        if($rota){
             try{
                 if( ! empty( $this->dados ) ) $rota( $this->dados );
-                else if ( ! empty( $this->parametro ) ) $rota( $this->parametro );
+                else if ( ! empty( $this->parametros ) ) $rota( $this->parametros );
                 else $rota();
             }
             catch (RuntimeException $e) {
