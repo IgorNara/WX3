@@ -23,7 +23,6 @@ class Rota {
             try{
                 if( ! empty( $this->dados ) ) $rota( $this->dados );
                 else if ( ! empty( $this->parametros ) ) $rota( $this->parametros );
-                else $rota();
             }
             catch (RuntimeException $e) {
                 respostaJson( true, $e->getMessage(), 400 );

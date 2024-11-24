@@ -11,15 +11,8 @@ $conexao = getConexao();
 $rota = new Rota( $_SERVER, $dados );
 $arrayRotas = require_once __DIR__ . "/src/rotas.php";
 
-if( $logica === "/cliente/logar" ) {
-    $rotas = require_once __DIR__ . "/src/controller/rotas-cliente.php";
-    $rota->executarRota( $rotas );
-}
-else {
-    require_once __DIR__ . '/src/model/autenticar.php';
-    foreach( $arrayRotas as $rotas ) {
-        if( isset( $rotas[$logica] ) ) 
-            $rota->executarRota( $rotas );
-    }
+foreach( $arrayRotas as $rotas ) {
+    if( isset( $rotas[$logica] ) ) 
+        $rota->executarRota( $rotas );
 }
 ?>

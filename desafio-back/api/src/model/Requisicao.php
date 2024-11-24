@@ -25,7 +25,7 @@ class Requisicao {
 
         $this->arquivoAtual = $this->dadosReq[ 'PHP_SELF' ]; 
 
-        $this->diretorioRaiz = dirname( $this->arquivoAtual ); 
+        $this->diretorioRaiz = strtolower( dirname( $this->arquivoAtual ) ); 
 
         $this->rota = str_replace( $this->diretorioRaiz, '', $this->url ); 
 
@@ -33,7 +33,7 @@ class Requisicao {
 
         $this->arrayRota = explode( '/', $this->rota );
 
-        $this->logica = $this->arrayRota[1];
+        $this->logica = "/".$this->arrayRota[1];
 
         if( count( $this->arrayRota ) > 2 ) {
             for( $i = 2; $i < count( $this->arrayRota ); $i++ ) {
@@ -43,8 +43,8 @@ class Requisicao {
                     $this->logica .= "/".$this->arrayRota[$i];
             }
         }
-        
-        $this->logicaComId = ( ! empty( $this->parametros ) ) ? '/'.$this->logica.'/:id' : '/'.$this->logica;
+
+        $this->logicaComId = '/'.$this->logica.'/:id';
     }
 
 

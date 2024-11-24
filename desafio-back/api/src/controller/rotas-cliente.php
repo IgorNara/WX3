@@ -14,6 +14,7 @@ return [
 
     "/cliente" => [
         "GET" => function () use ( $clientePersistivel ) {
+            require_once __DIR__ . '/src/model/autenticar.php';
             $clientes = $clientePersistivel->obterTodos();
             respostaJson( false, "Listagem efetuada com sucesso!", 200, $clientes );
         },
@@ -32,6 +33,7 @@ return [
         },
 
         "PUT" => function ( $dados ) use ( $clientePersistivel ) {
+            require_once __DIR__ . '/src/model/autenticar.php';
             $cliente = new Cliente( $dados["id"], $dados["nomeCompleto"], $dados["cpf"], $dados["dataNascimento"] );
             $cliente->validar();
 

@@ -52,12 +52,11 @@ function respostaJson( bool $erro, string $msg, int $codeStatus, $dados = null )
 
 function obterLogica(): string {
     $url = $_SERVER[ 'REQUEST_URI' ]; 
-    $diretorioRaiz = dirname( $_SERVER[ 'PHP_SELF' ] ); 
-    $rotaCompleta = str_replace( $diretorioRaiz, '', $url ); 
+    $diretorioRaiz = strtolower( dirname( $_SERVER[ 'PHP_SELF' ] ) ); 
+    $rotaCompleta = str_replace( $diretorioRaiz, "", $url ); 
     $arrayRota = explode( '/', $rotaCompleta );
 
-    $logica = "/$arrayRota[1]";
-    
+    $logica = "/{$arrayRota[1]}";
     if( count( $arrayRota ) > 2 ) {
         for( $i = 2; $i < count( $arrayRota ); $i++ ) {
             if( ! is_numeric( $arrayRota[$i] ) )
