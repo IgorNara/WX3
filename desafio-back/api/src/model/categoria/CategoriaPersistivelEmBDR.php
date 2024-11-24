@@ -12,13 +12,19 @@ class CategoriaPersistivelEmBDR implements CategoriaPersistivel {
 
     /** @inheritDoc */
     public function obterTodos(): array {
+        $categorias = [];
         try {
             $sql = "SELECT * FROM categoria";
 
             $ps = $this->conexao->prepare( $sql );
             $ps->execute();
 
-            return $ps->fetchAll();
+            $resposta = $ps->fetchAll();
+            foreach( $resposta as $categoria ) {
+                $categorias[] = new Categoria( (int) $categoria["id"], $categoria["nome"], $categoria["descricao"] );
+            }
+
+            return $categorias;
         }
         catch ( RuntimeException $erro ) {
             throw new RuntimeException( "Erro ao listar categorias - ".$erro->getMessage() );
@@ -91,7 +97,7 @@ class CategoriaPersistivelEmBDR implements CategoriaPersistivel {
 
             $resposta = $ps->fetch();
 
-            return new Categoria( $id, $resposta["nome"], $resposta["descricao"] );
+            return new Categoria( (int) $id, $resposta["nome"], $resposta["descricao"] );
         }
         catch ( RuntimeException $erro ) {
             throw new RuntimeException( "Erro ao buscar categoria - ".$erro->getMessage() );

@@ -11,19 +11,19 @@ $gestorTransacao = new GestorTransacao( $conexao );
 // formato esperado em $dados = {
 //     idCliente,
 //     formaPagamento,
-//     produtos: {
+//     produtos: [
 //         { 
 //             id: 0, // id do produto
-//             tamanhos: {
+//             tamanhos: [
 //                 {
 //                     id: 0, // id do tamanho
 //                     qtd: 0 // quantidade que saiu desse tamanho
 //                 }, 
 //                 // mais tamanhos podem ser enviados seguinto esse formato
-//             }
+//             ]
 //         },
 //         // mais produtos podem ser enviados seguindo esse formato
-//     },
+//     ],
 //     endereco: {
 //         id: 0, // O id deve sempre ser fornecido. Caso seja novo, deve ser enviado como 0 seguido do restante das informações
 //     }
@@ -52,7 +52,7 @@ return [
 
                 // Insere uma venda
                 $cliente = new Cliente( $dados["idCliente"] );
-                $venda = new Venda( 0, $cliente, $endereco, FormaPagamentoDesconto::from( $dados["formaPagamento"] ) );
+                $venda = new Venda( 0, $cliente, $endereco, FormaPagamento::from( $dados["formaPagamento"] ) );
                 $venda->valorTotal = $venda->calcularValorTotal( $dadosProdutos, $produtoPersistivel );
                 $venda->validar();
 
@@ -88,7 +88,7 @@ return [
                         $vptPersistivel->inserir( $vpt );
 
                         // Altera o estoque desse tamanho do produto
-                        $tamanhoProduto = $tamanhoProdutoPersistivel->obterPeloId( $produto->id, $tamanho->id );
+                        $tamanhoProduto = $tamanhoProdutoPersistivel->obterPeloId( (int) $produto->id, (int) $tamanho->id );
                         $tamanhoProduto->qtd -= $dadosTamanho["qtd"];
                         $tamanhoProduto->validar();
 

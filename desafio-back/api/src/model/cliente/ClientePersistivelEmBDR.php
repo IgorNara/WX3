@@ -22,7 +22,7 @@ class ClientePersistivelEmBDR implements ClientePersistivel {
             $resposta = $ps->fetchAll();
             foreach( $resposta as $cliente ) {
                 $clientes[] = new Cliente( 
-                    $cliente["id"],
+                    (int) $cliente["id"],
                     $cliente["nomeCompleto"],
                     $cliente["cpf"],
                     $cliente["dataNascimento"]
@@ -104,7 +104,7 @@ class ClientePersistivelEmBDR implements ClientePersistivel {
 
             $resposta = $ps->fetch();
 
-            return new Cliente( $id, $resposta["nomeCompleto"], $resposta["cpf"], $resposta["dataNascimento"] );
+            return new Cliente( (int) $resposta["id"], $resposta["nomeCompleto"], $resposta["cpf"], $resposta["dataNascimento"] );
         }
         catch ( RuntimeException $erro ) {
             throw new RuntimeException( "Erro ao buscar cliente - ".$erro->getMessage() );

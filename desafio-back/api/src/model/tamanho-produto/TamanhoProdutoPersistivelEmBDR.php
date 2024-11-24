@@ -26,13 +26,14 @@ class TamanhoProdutoPersistivelEmBDR implements TamanhoProdutoPersistivel {
             $ps = $this->conexao->prepare( $sql );
             $ps->execute();
 
+
             $resposta = $ps->fetchAll();
             foreach( $resposta as $tp ) {
-                $categoria = new Categoria( $tp["idCategoria"], $tp["categoria"], $tp["descricaoCategoria"] );
-                $produto = new Produto( $tp["idProduto"], $categoria, $tp["nome"], $tp["arrayCores"], $tp["arrayUrlImg"], $tp["preco"], $tp["descricao"], $tp["dataCadastro"], $tp["peso"] );
-                $tamanho = new Tamanho( $tp["idTamanho"], CampoUnicoTamanho::from( $tp["sigla"] ) );
+                $categoria = new Categoria( (int) $tp["idCategoria"], $tp["categoria"], $tp["descricaoCategoria"] );
+                $produto = new Produto( (int) $tp["idProduto"], $categoria, $tp["nome"], (array) $tp["arrayCores"], ( array ) $tp["arrayUrlImg"], (float) $tp["preco"], $tp["descricao"], $tp["dataCadastro"], (float) $tp["peso"] );
+                $tamanho = new Tamanho( (int) $tp["idTamanho"], CampoUnicoTamanho::from( $tp["sigla"] ) );
 
-                $tamanhosProdutos[] = new TamanhoProduto( $produto, $tamanho, $tp["qtd"] );
+                $tamanhosProdutos[] = new TamanhoProduto( $produto, $tamanho, (int) $tp["qtd"] );
             }
             return $tamanhosProdutos;
         }
@@ -79,12 +80,12 @@ class TamanhoProdutoPersistivelEmBDR implements TamanhoProdutoPersistivel {
 
 
     /** @inheritDoc */
-    public function obterPeloId( int $idProduto, $idTamanho ): TamanhoProduto {
+    public function obterPeloId( int $idProduto, int $idTamanho ): TamanhoProduto {
         try {
-            $sql = "SELECT tp.qtd, 
+            $sql = "SELECT tp.*, 
                            p.idCategoria, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
                            c.nome AS categoria, c.descricao AS descricaoCategoria,
-                           t.id AS idTamanho, t.sigla 
+                           t.sigla 
                     FROM tamanho_produto tp 
                     JOIN produto p ON ( tp.idProduto = p.id )
                     JOIN categoria c ON ( p.idCategoria = c.id )
@@ -93,14 +94,15 @@ class TamanhoProdutoPersistivelEmBDR implements TamanhoProdutoPersistivel {
 
             $ps = $this->conexao->prepare( $sql );
             $ps->bindParam( 1, $idProduto );
+            $ps->bindParam( 2, $idTamanho );
             $ps->execute();
 
             $resposta = $ps->fetch();
 
-            $categoria = new Categoria( $resposta["idCategoria"], $resposta["categoria"], $resposta["descricaoCategoria"] );
-            $produto = new Produto( $idProduto, $categoria, $resposta["nome"], $resposta["arrayCores"], $resposta["arrayUrlImg"], $resposta["preco"], $resposta["descricao"], $resposta["dataCadastro"], $resposta["peso"] );
+            $categoria = new Categoria( (int) $resposta["idCategoria"], $resposta["categoria"], $resposta["descricaoCategoria"] );
+            $produto = new Produto( $resposta["idProduto"], $categoria, $resposta["nome"], (array) $resposta["arrayCores"], ( array ) $resposta["arrayUrlImg"], (float) $resposta["preco"], $resposta["descricao"], $resposta["dataCadastro"], (float) $resposta["peso"] );
             $tamanho = new Tamanho( $resposta["idTamanho"], CampoUnicoTamanho::from( $resposta["sigla"] ) );
-            return new TamanhoProduto( $produto, $tamanho, $resposta["qtd"] );
+            return new TamanhoProduto( $produto, $tamanho, (int) $resposta["qtd"] );
         }
         catch ( RuntimeException $erro ) {
             throw new RuntimeException( "Erro ao buscar tamanhos do produto - ".$erro->getMessage() );
@@ -111,10 +113,10 @@ class TamanhoProdutoPersistivelEmBDR implements TamanhoProdutoPersistivel {
     public function obterPeloIdProduto( int $idProduto ): array {
         $tamanhosProduto = [];
         try {
-            $sql = "SELECT tp.qtd, 
+            $sql = "SELECT tp.*, 
                            p.idCategoria, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
                            c.nome AS categoria, c.descricao AS descricaoCategoria,
-                           t.id AS idTamanho, t.sigla 
+                           t.sigla 
                     FROM tamanho_produto tp 
                     JOIN produto p ON ( tp.idProduto = p.id )
                     JOIN categoria c ON ( p.idCategoria = c.id )
@@ -126,11 +128,11 @@ class TamanhoProdutoPersistivelEmBDR implements TamanhoProdutoPersistivel {
             $ps->execute();
 
             $resposta = $ps->fetchAll();
-            foreach( $resposta as $tamanhoProduto ) {
-                $categoria = new Categoria( $tamanhoProduto["idCategoria"], $tamanhoProduto["categoria"], $tamanhoProduto["descricaoCategoria"] );
-                $produto = new Produto( $idProduto, $categoria, $tamanhoProduto["nome"], $tamanhoProduto["arrayCores"], $tamanhoProduto["arrayUrlImg"], $tamanhoProduto["preco"], $tamanhoProduto["descricao"], $tamanhoProduto["dataCadastro"], $tamanhoProduto["peso"] );
-                $tamanho = new Tamanho( $tamanhoProduto["idTamanho"], CampoUnicoTamanho::from( $tamanhoProduto["sigla"] ) );
-                $tamanhosProduto[] = new TamanhoProduto( $produto, $tamanho, $resposta["qtd"] );
+            foreach( $resposta as $tp ) {
+                $categoria = new Categoria( (int) $tp["idCategoria"], $tp["categoria"], $tp["descricaoCategoria"] );
+                $produto = new Produto( (int) $tp["idProduto"], $categoria, $tp["nome"], (array) $tp["arrayCores"], ( array ) $tp["arrayUrlImg"], (float) $tp["preco"], $tp["descricao"], $tp["dataCadastro"], (float) $tp["peso"] );
+                $tamanho = new Tamanho( (int) $tp["idTamanho"], CampoUnicoTamanho::from( $tp["sigla"] ) );
+                $tamanhosProduto[] = new TamanhoProduto( $produto, $tamanho, (int) $tp["qtd"] );
             }
            
             return $tamanhosProduto;
@@ -144,7 +146,7 @@ class TamanhoProdutoPersistivelEmBDR implements TamanhoProdutoPersistivel {
     /** @inheritDoc */
     public function existeComIdProduto( int $idProduto ): bool {
         try {
-            $sql = "SELECT id FROM tamanho_produto WHERE idProduto = ?";
+            $sql = "SELECT idProduto FROM tamanho_produto WHERE idProduto = ?";
 
             $ps = $this->conexao->prepare( $sql );
             $ps->bindParam( 1, $idProduto );

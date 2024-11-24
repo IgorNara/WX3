@@ -44,7 +44,7 @@ class Requisicao {
             }
         }
 
-        $this->logicaComId = '/'.$this->logica.'/:id';
+        $this->logicaComId = $this->logica.'/:id';
     }
 
 

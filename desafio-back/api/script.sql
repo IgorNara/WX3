@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS venda(
     CONSTRAINT fk_venda__cliente_id FOREIGN KEY ( idCliente ) REFERENCES cliente ( id ),
     CONSTRAINT fk_venda__endereco_id FOREIGN KEY ( idEndereco ) REFERENCES endereco ( id )
 )ENGINE=INNODB;
-INSERT INTO venda ( idCliente, idEndereco, valorTotal, valorFrete, percentualDesconto, formaPagamento ) VALUES ( 1, 1, 59.99, 10.00, 10, "PIX" );
+INSERT INTO venda ( idCliente, idEndereco, valorTotal, valorFrete, percentualDesconto, formaPagamento ) VALUES ( 1, 1, 59.99, 10.00, 10, "Pix" );
 
 
 CREATE TABLE IF NOT EXISTS venda_produto_tamanho(

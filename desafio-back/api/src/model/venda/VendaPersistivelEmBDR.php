@@ -12,6 +12,7 @@ class VendaPersistivelEmBDR implements VendaPersistivel {
 
     /** @inheritDoc */
     public function inserir( Venda $venda ): int {
+        $formaPagamento = $venda->formaPagamento->value;
         try {
             $sql = "INSERT INTO venda ( idCliente, idEndereco, valorTotal, valorFrete, percentualDesconto, formaPagamento ) VALUES ( ?, ?, ?, ?, ?, ? )";
 
@@ -21,7 +22,7 @@ class VendaPersistivelEmBDR implements VendaPersistivel {
             $ps->bindParam( 3, $venda->valorTotal );
             $ps->bindParam( 4, $venda->valorFrete );
             $ps->bindParam( 5, $venda->percentualDesconto );
-            $ps->bindParam( 6, $venda->formaPagamento->name );
+            $ps->bindParam( 6, $formaPagamento );
             $ps->execute();
 
             return intval( $this->conexao->lastInsertId() );
@@ -48,14 +49,14 @@ class VendaPersistivelEmBDR implements VendaPersistivel {
 
             $resposta = $ps->fetch();
 
-            $cliente = new Cliente( $resposta["idCliente"], $resposta["nomeCompleto"], $resposta["cpf"], $resposta["dataNascimento"] );
-            $endereco = new Endereco( $resposta["idEndereco"], $resposta["logradouro"], $resposta["cidade"], $resposta["bairro"], $resposta["cep"], $resposta["numero"], $resposta["complemento"] );
+            $cliente = new Cliente( (int) $resposta["idCliente"], $resposta["nomeCompleto"], $resposta["cpf"], $resposta["dataNascimento"] );
+            $endereco = new Endereco( (int) $resposta["idEndereco"], $resposta["logradouro"], $resposta["cidade"], $resposta["bairro"], $resposta["cep"], (int) $resposta["numero"], $resposta["complemento"] );
 
             $venda = new Venda( 
                 $resposta["id"],  
                 $cliente, 
                 $endereco, 
-                FormaPagamentoDesconto::from( $resposta["formaPagamento"] )
+                FormaPagamento::from( $resposta["formaPagamento"] )
             );
             $venda->valorTotal = $resposta["valorTotal"];
             return $venda;

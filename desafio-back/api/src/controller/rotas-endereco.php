@@ -37,17 +37,17 @@ return [
 
     "/endereco/:id" => [
         "GET" => function ( $parametros ) use ( $enderecoPersistivel ) {
-            if( ! $enderecoPersistivel->existeComId( $parametros[0] ) )
+            if( ! $enderecoPersistivel->existeComId( (int) $parametros[0] ) )
                 respostaJson( true, "Informações não encontradas!", 400 );
 
-            respostaJson( false, "Informações listadas com sucesso!", 200, $enderecoPersistivel->obterPeloId( $parametros[0] ) );
+            respostaJson( false, "Informações listadas com sucesso!", 200, $enderecoPersistivel->obterPeloId( (int) $parametros[0] ) );
         },  
 
         "DELETE" => function ( $parametros ) use ( $enderecoPersistivel ) {
-            if( ! $enderecoPersistivel->existeComId( $parametros[0] ) )
+            if( ! $enderecoPersistivel->existeComId( (int) $parametros[0] ) )
                 respostaJson( true, "Informações não encontradas!", 400 );
 
-            $enderecoPersistivel->excluirPeloId( $parametros[0] );
+            $enderecoPersistivel->excluirPeloId( (int) $parametros[0] );
             respostaJson( false, "Exclusão efetuada com sucesso!", 204 );
         }
     ]

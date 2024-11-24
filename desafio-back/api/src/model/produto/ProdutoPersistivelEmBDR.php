@@ -86,7 +86,7 @@ class ProdutoPersistivelEmBDR implements ProdutoPersistivel {
     public function obterPeloId( int $id ): Produto {
         try {
             $sql = "SELECT p.*, c.nome AS categoria, c.descricao AS descricaoCategoria 
-                    FROM produto p JOIN categoria c ON ( p.idCategoria = c.id ) WHERE id = ?";
+                    FROM produto p JOIN categoria c ON ( p.idCategoria = c.id ) WHERE p.id = ?";
 
             $ps = $this->conexao->prepare( $sql );
             $ps->bindParam( 1, $id );
@@ -94,18 +94,18 @@ class ProdutoPersistivelEmBDR implements ProdutoPersistivel {
 
             $resposta = $ps->fetch();
 
-            $categoria = new Categoria( $resposta["idCategoria"], $resposta["categoria"], $resposta["descricaoCategoria"] );
+            $categoria = new Categoria( (int) $resposta["idCategoria"], $resposta["categoria"], $resposta["descricaoCategoria"] );
 
             return new Produto( 
-                $resposta["id"],
+                (int) $resposta["id"],
                 $categoria,
                 $resposta["nome"],
-                json_decode( $resposta["arrayCores"], true ),
-                json_decode( $resposta["arrayUrlImg"], true ),
-                $resposta["preco"],
+                (array) $resposta["arrayCores"],
+                (array) $resposta["arrayUrlImg"],
+                (float) $resposta["preco"],
                 $resposta["descricao"],
                 $resposta["dataCadastro"],
-                $resposta["peso"]
+                (float) $resposta["peso"]
             );
         }
         catch ( RuntimeException $erro ) {
@@ -140,29 +140,30 @@ class ProdutoPersistivelEmBDR implements ProdutoPersistivel {
     public function rankProdutosMaisVendidos(): array {
         $produtos = [];
         try {
-            $sql = "SELECT p.*, c.nome AS categoria, c.descricao AS descricaoCategoria
-                    FROM venda_produto_tamanho vpt 
-                    JOIN produto p ON ( vpt.idProduto = produto.id ) 
+            $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
+                           p.idCategoria, c.nome AS categoria, c.descricao AS descricaoCategoria
+                    FROM venda_produto_tamanho vpt
+                    JOIN produto p ON ( vpt.idProduto = p.id )
                     JOIN categoria c ON ( p.idCategoria = c.id )
-                    GROUP BY p.id, c.id ORDER BY SUM( qtd ) DESC"; // LIMIT ?
+                    GROUP BY p.id, c.id ORDER BY SUM( vpt.qtd ) DESC"; // LIMIT ?
             
             $ps = $this->conexao->prepare( $sql );
             $ps->execute();
 
             $resposta = $ps->fetchAll();
             foreach( $resposta as $produto ) {
-                $categoria = new Categoria( $produto["idCategoria"], $produto["categoria"], $produto["descricaoCategoria"] );
+                $categoria = new Categoria( (int) $produto["idCategoria"], $produto["categoria"], $produto["descricaoCategoria"] );
                 
                 $produtos[] = new Produto( 
-                    $produto["id"],
+                    (int) $produto["id"],
                     $categoria,
                     $produto["nome"],
-                    json_decode( $produto["arrayCores"], true ),
-                    json_decode( $produto["arrayUrlImg"], true ),
-                    $produto["preco"],
+                    (array) $produto["arrayCores"],
+                    (array) $produto["arrayUrlImg"],
+                    (float) $produto["preco"],
                     $produto["descricao"],
                     $produto["dataCadastro"],
-                    $produto["peso"]
+                    (float) $produto["peso"]
                 );
             }
             return $produtos;

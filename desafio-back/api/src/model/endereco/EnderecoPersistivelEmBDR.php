@@ -22,12 +22,12 @@ class EnderecoPersistivelEmBDR implements EnderecoPersistivel {
             $resposta = $ps->fetchAll();
             foreach( $resposta as $endereco ){
                 $enderecos[] = new Endereco( 
-                    $endereco["id"], 
+                    (int) $endereco["id"], 
                     $endereco["logradouro"],
                     $endereco["cidade"],
                     $endereco["bairro"],
                     $endereco["cep"],
-                    $endereco["numero"],
+                    (int) $endereco["numero"],
                     $endereco["complemento"]
                 );
             }
@@ -64,7 +64,7 @@ class EnderecoPersistivelEmBDR implements EnderecoPersistivel {
     /** @inheritDoc */
     public function alterar( Endereco $endereco ): int {
         try {
-            $sql = "UPDATE cliente SET logradouro = ?, cidade = ?, bairro = ?, numero = ?, cep = ?, complemento = ? WHERE id = ?";
+            $sql = "UPDATE endereco SET logradouro = ?, cidade = ?, bairro = ?, numero = ?, cep = ?, complemento = ? WHERE id = ?";
 
             $ps = $this->conexao->prepare( $sql );
             $ps->bindParam( 1, $endereco->logradouro);
@@ -113,12 +113,12 @@ class EnderecoPersistivelEmBDR implements EnderecoPersistivel {
             $resposta = $ps->fetch();
 
             return new Endereco( 
-                $id, 
+                (int) $id, 
                 $resposta["logradouro"], 
                 $resposta["cidade"], 
                 $resposta["bairro"],
                 $resposta["cep"], 
-                $resposta["numero"], 
+                (int) $resposta["numero"], 
                 $resposta["complemento"]
             );
         }

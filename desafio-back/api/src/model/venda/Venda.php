@@ -5,16 +5,18 @@ declare(strict_types = 1);
 class Venda {
     private array $problemas = [];
     public float $valorFrete = 10.00;
-    public int $percentualDesconto;
-    public float $valorTotal = 0.0;
+    public int $percentualDesconto = 0;
+    
 
     public function __construct(
         public int $id = 0,
         public Cliente $cliente,
         public Endereco $endereco,
-        public ?FormaPagamentoDesconto $formaPagamento = null,
+        public ?FormaPagamento $formaPagamento = null,
+        public float $valorTotal = 0.0
     ){
-        $this->percentualDesconto = $formaPagamento->value;
+        if( $this->formaPagamento->value === "Pix" )
+            $this->percentualDesconto = 10;
     }
 
 

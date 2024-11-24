@@ -37,17 +37,17 @@ return [
 
     "/categoria/:id" => [
         "GET" => function ( $parametros ) use ( $categoriaPersistivel ) {
-            if( ! $categoriaPersistivel->existeComId( $parametros[0] ) )
+            if( ! $categoriaPersistivel->existeComId( (int) $parametros[0] ) )
                 respostaJson( true, "Informações não encontradas!", 400 );
 
-            respostaJson( false, "Informações listadas com sucesso!", 200, $categoriaPersistivel->obterPeloId( $parametros[0] ) );
+            respostaJson( false, "Informações listadas com sucesso!", 200, $categoriaPersistivel->obterPeloId( (int) $parametros[0] ) );
         },
 
         "DELETE" => function ( $parametros ) use ( $categoriaPersistivel ) {
-            if( ! $categoriaPersistivel->existeComId( $parametros[0] ) )
+            if( ! $categoriaPersistivel->existeComId( (int) $parametros[0] ) )
                 respostaJson( true, "Informações não encontradas!", 400 );
         
-            $categoriaPersistivel->excluirPeloId( $parametros[0] );
+            $categoriaPersistivel->excluirPeloId( (int) $parametros[0] );
             respostaJson( false, "Exclusão efetuada com sucesso!", 204 );
         }
     ]

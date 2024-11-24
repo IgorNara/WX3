@@ -14,7 +14,6 @@ return [
 
     "/cliente" => [
         "GET" => function () use ( $clientePersistivel ) {
-            require_once __DIR__ . '/src/model/autenticar.php';
             $clientes = $clientePersistivel->obterTodos();
             respostaJson( false, "Listagem efetuada com sucesso!", 200, $clientes );
         },
@@ -33,7 +32,6 @@ return [
         },
 
         "PUT" => function ( $dados ) use ( $clientePersistivel ) {
-            require_once __DIR__ . '/src/model/autenticar.php';
             $cliente = new Cliente( $dados["id"], $dados["nomeCompleto"], $dados["cpf"], $dados["dataNascimento"] );
             $cliente->validar();
 
@@ -48,17 +46,17 @@ return [
 
     "/cliente/:id" => [
         "GET" => function ( $parametros ) use ( $clientePersistivel ) {
-            if( ! $clientePersistivel->existeComId( $parametros[0] ) )
+            if( ! $clientePersistivel->existeComId( (int) $parametros[0] ) )
                 respostaJson( true, "Informações não encontradas!", 400 );
 
-            respostaJson( false, "Informações listadas com sucesso!", 200, $clientePersistivel->obterPeloId( $parametros[0] ) );
+            respostaJson( false, "Informações listadas com sucesso!", 200, $clientePersistivel->obterPeloId( (int) $parametros[0] ) );
         },
 
         "DELETE" => function ( $parametros ) use ( $clientePersistivel ) {
-            if( ! $clientePersistivel->existeComId( $parametros[0] ) )
+            if( ! $clientePersistivel->existeComId( (int) $parametros[0] ) )
                 respostaJson( true, "Informações não encontradas!", 400 );
 
-            $clientePersistivel->excluirPeloId( $parametros[0] );
+            $clientePersistivel->excluirPeloId( (int) $parametros[0] );
             respostaJson( false, "Exclusão efetuada com sucesso!", 204 );
         }
     ]

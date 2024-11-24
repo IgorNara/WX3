@@ -34,19 +34,19 @@ class VendaProdutoTamanhoPersistivelEmBDR implements VendaProdutoTamanhoPersisti
 
             $resposta = $ps->fetchAll();
             foreach( $resposta as $vpt ) {
-                $cliente = new Cliente( $vpt["idCliente"], $vpt["nomeCompleto"], $vpt["cpf"], $vpt["dataNascimento"] );
+                $cliente = new Cliente( (int) $vpt["idCliente"], $vpt["nomeCompleto"], $vpt["cpf"], $vpt["dataNascimento"] );
 
-                $endereco = new Endereco( $vpt["idEndereco"], $vpt["logradouro"], $vpt["cidade"], $vpt["bairro"], $vpt["cep"], $vpt["numero"], $vpt["complemento"] );
+                $endereco = new Endereco( (int) $vpt["idEndereco"], $vpt["logradouro"], $vpt["cidade"], $vpt["bairro"], $vpt["cep"], (int) $vpt["numero"], $vpt["complemento"] );
 
-                $venda = new Venda( $vpt["idVenda"], $cliente, $endereco, FormaPagamentoDesconto::from( $vpt["formaPagamento"] ), $vpt["valorTotal"] );
+                $venda = new Venda( (int) $vpt["idVenda"], $cliente, $endereco, FormaPagamento::from( $vpt["formaPagamento"] ), (float) $vpt["valorTotal"] );
 
-                $categoria = new Categoria( $vpt["idCategoria"], $vpt["categoria"], $vpt["descricaoCategoria"] );
+                $categoria = new Categoria( (int) $vpt["idCategoria"], $vpt["categoria"], $vpt["descricaoCategoria"] );
 
-                $produto = new Produto( $vpt["idProduto"], $categoria, $vpt["produto"], $vpt["arrayCores"], $vpt["arrayUrlImg"], $vpt["preco"], $vpt["descricaoProduto"], $vpt["dataCadastro"], $vpt["peso"] );
+                $produto = new Produto( (int) $vpt["idProduto"], $categoria, $vpt["produto"], (array) $vpt["arrayCores"], (array) $vpt["arrayUrlImg"], (float) $vpt["preco"], $vpt["descricaoProduto"], $vpt["dataCadastro"], (float) $vpt["peso"] );
 
-                $tamanho = new Tamanho( $vpt["idTamanho"], CampoUnicoTamanho::from( $vpt["sigla"] ) );
+                $tamanho = new Tamanho( (int) $vpt["idTamanho"], CampoUnicoTamanho::from( $vpt["sigla"] ) );
 
-                $vendasProdutosTamanhos[] = new VendaProdutoTamanho( $venda, $produto, $tamanho, $vpt["qtd"], $vpt["precoVenda"] );
+                $vendasProdutosTamanhos[] = new VendaProdutoTamanho( $venda, $produto, $tamanho, (int) $vpt["qtd"], (float) $vpt["precoVenda"] );
             }
             return $vendasProdutosTamanhos;
         }
@@ -121,12 +121,12 @@ class VendaProdutoTamanhoPersistivelEmBDR implements VendaProdutoTamanhoPersisti
     public function obterPeloId( int $idVenda, int $idProduto, int $idTamanho ): VendaProdutoTamanho {
         try {
             $sql = "SELECT vpt.qtd, vpt.precoVenda,
-                           v.valorTotal, v.valorFrete, v.percentualDesconto, v.formaPagamento,
-                           p.nome AS produto, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao AS descricaoProduto, p.dataCadastro, p.peso,
-                           t.sigla,
+                           vpt.idVenda, v.valorTotal, v.valorFrete, v.percentualDesconto, v.formaPagamento,
+                           vpt.idProduto, p.nome AS produto, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao AS descricaoProduto, p.dataCadastro, p.peso,
+                           vpt.idTamanho, t.sigla,
                            v.idCliente, cl.nomeCompleto, cl.cpf, cl.dataNascimento, 
                            v.idEndereco, e.logradouro, e.cidade, e.bairro, e.numero, e.cep, e.complemento,
-                           p.idCategoria, ca.nome AS categoria, ca.descricao AS descricaoCategoria 
+                           p.idCategoria, ca.nome AS categoria, ca.descricao AS descricaoCategoria  
                     FROM venda_produto_tamanho vpt 
                     JOIN venda v ON ( vpt.idVenda = v.id )
                     JOIN cliente cl ON ( v.idCliente = cl.id )
@@ -144,19 +144,19 @@ class VendaProdutoTamanhoPersistivelEmBDR implements VendaProdutoTamanhoPersisti
 
             $resposta = $ps->fetch();
 
-            $cliente = new Cliente( $resposta["idCliente"], $resposta["nomeCompleto"], $resposta["cpf"], $resposta["dataNascimento"] );
+            $cliente = new Cliente( (int) $resposta["idCliente"], $resposta["nomeCompleto"], $resposta["cpf"], $resposta["dataNascimento"] );
 
-            $endereco = new Endereco( $resposta["idEndereco"], $resposta["logradouro"], $resposta["cidade"], $resposta["bairro"], $resposta["cep"], $resposta["numero"], $resposta["complemento"] );
+            $endereco = new Endereco( (int) $resposta["idEndereco"], $resposta["logradouro"], $resposta["cidade"], $resposta["bairro"], $resposta["cep"], (int) $resposta["numero"], $resposta["complemento"] );
 
-            $venda = new Venda( $idVenda, $cliente, $endereco, FormaPagamentoDesconto::from( $resposta["formaPagamento"] ), $resposta["valorTotal"] );
+            $venda = new Venda( (int) $resposta["idVenda"], $cliente, $endereco, FormaPagamento::from( $resposta["formaPagamento"] ), (float) $resposta["valorTotal"] );
 
-            $categoria = new Categoria( $resposta["idCategoria"], $resposta["categoria"], $resposta["descricaoCategoria"] );
+            $categoria = new Categoria( (int) $resposta["idCategoria"], $resposta["categoria"], $resposta["descricaoCategoria"] );
 
-            $produto = new Produto( $idProduto, $categoria, $resposta["produto"], $resposta["arrayCores"], $resposta["arrayUrlImg"], $resposta["preco"], $resposta["descricaoProduto"], $resposta["dataCadastro"], $resposta["peso"] );
+            $produto = new Produto( (int) $resposta["idProduto"], $categoria, $resposta["produto"], (array) $resposta["arrayCores"], (array) $resposta["arrayUrlImg"], (float) $resposta["preco"], $resposta["descricaoProduto"], $resposta["dataCadastro"], (float) $resposta["peso"] );
 
-            $tamanho = new Tamanho( $idTamanho, CampoUnicoTamanho::from( $resposta["sigla"] ) );
+            $tamanho = new Tamanho( (int) $resposta["idTamanho"], CampoUnicoTamanho::from( $resposta["sigla"] ) );
 
-            return new VendaProdutoTamanho( $venda, $produto, $tamanho, $resposta["qtd"], $resposta["precoVenda"] );
+            return new VendaProdutoTamanho( $venda, $produto, $tamanho, (int) $resposta["qtd"], (float) $resposta["precoVenda"] );
         }
         catch ( RuntimeException $erro ) {
             throw new RuntimeException( "Erro ao buscar informações da venda - ".$erro->getMessage() );
@@ -169,7 +169,7 @@ class VendaProdutoTamanhoPersistivelEmBDR implements VendaProdutoTamanhoPersisti
         $tamanhosProdutosVenda = [];
         try {
             $sql = "SELECT vpt.qtd, vpt.precoVenda,
-                           v.valorTotal, v.valorFrete, v.percentualDesconto, v.formaPagamento,
+                           vpt.idVenda, v.valorTotal, v.valorFrete, v.percentualDesconto, v.formaPagamento,
                            vpt.idProduto, p.nome AS produto, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao AS descricaoProduto, p.dataCadastro, p.peso,
                            vpt.idTamanho, t.sigla,
                            v.idCliente, cl.nomeCompleto, cl.cpf, cl.dataNascimento, 
@@ -190,19 +190,19 @@ class VendaProdutoTamanhoPersistivelEmBDR implements VendaProdutoTamanhoPersisti
 
             $resposta = $ps->fetchAll();
             foreach( $resposta as $vpt ) {
-                $cliente = new Cliente( $vpt["idCliente"], $vpt["nomeCompleto"], $vpt["cpf"], $vpt["dataNascimento"] );
+                $cliente = new Cliente( (int) $vpt["idCliente"], $vpt["nomeCompleto"], $vpt["cpf"], $vpt["dataNascimento"] );
 
-                $endereco = new Endereco( $vpt["idEndereco"], $vpt["logradouro"], $vpt["cidade"], $vpt["bairro"], $vpt["cep"], $vpt["numero"], $vpt["complemento"] );
-    
-                $venda = new Venda( $idVenda, $cliente, $endereco, FormaPagamentoDesconto::from( $vpt["formaPagamento"] ), $vpt["valorTotal"] );
-    
-                $categoria = new Categoria( $vpt["idCategoria"], $vpt["categoria"], $vpt["descricaoCategoria"] );
-    
-                $produto = new Produto( $vpt["idProduto"], $categoria, $vpt["produto"], $vpt["arrayCores"], $vpt["arrayUrlImg"], $vpt["preco"], $vpt["descricaoProduto"], $vpt["dataCadastro"], $vpt["peso"] );
-    
-                $tamanho = new Tamanho( $vpt["idTamanho"], CampoUnicoTamanho::from( $vpt["sigla"] ) );
+                $endereco = new Endereco( (int) $vpt["idEndereco"], $vpt["logradouro"], $vpt["cidade"], $vpt["bairro"], $vpt["cep"], (int) $vpt["numero"], $vpt["complemento"] );
 
-                $tamanhosProdutosVenda[] = new VendaProdutoTamanho( $venda, $produto, $tamanho, $vpt["qtd"], $vpt["precoVenda"] );
+                $venda = new Venda( (int) $vpt["idVenda"], $cliente, $endereco, FormaPagamento::from( $vpt["formaPagamento"] ), (float) $vpt["valorTotal"] );
+
+                $categoria = new Categoria( (int) $vpt["idCategoria"], $vpt["categoria"], $vpt["descricaoCategoria"] );
+
+                $produto = new Produto( (int) $vpt["idProduto"], $categoria, $vpt["produto"], (array) $vpt["arrayCores"], (array) $vpt["arrayUrlImg"], (float) $vpt["preco"], $vpt["descricaoProduto"], $vpt["dataCadastro"], (float) $vpt["peso"] );
+
+                $tamanho = new Tamanho( (int) $vpt["idTamanho"], CampoUnicoTamanho::from( $vpt["sigla"] ) );
+
+                $tamanhosProdutosVenda[] = new VendaProdutoTamanho( $venda, $produto, $tamanho, (int) $vpt["qtd"], (float) $vpt["precoVenda"] );
             }
 
             return $tamanhosProdutosVenda;
@@ -216,7 +216,7 @@ class VendaProdutoTamanhoPersistivelEmBDR implements VendaProdutoTamanhoPersisti
     /** @inheritDoc */
     public function existeComIdVenda( int $idVenda ): bool {
         try {
-            $sql = "SELECT id FROM venda_produto_tamanho WHERE idVenda = ?";
+            $sql = "SELECT idVenda FROM venda_produto_tamanho WHERE idVenda = ?";
 
             $ps = $this->conexao->prepare( $sql );
             $ps->bindParam( 1, $idVenda );

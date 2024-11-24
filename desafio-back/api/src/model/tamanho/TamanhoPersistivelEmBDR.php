@@ -21,7 +21,7 @@ class TamanhoPersistivelEmBDR implements TamanhoPersistivel {
 
             $resposta = $ps->fetchAll();
             foreach( $resposta as $tamanho ) {
-                $tamanhos[] = new Tamanho( $tamanho["id"], $tamanho["sigla"] );
+                $tamanhos[] = new Tamanho( (int) $tamanho["id"], CampoUnicoTamanho::from( $tamanho["sigla"] ) );
             }
             return $tamanhos;
         }
@@ -42,7 +42,7 @@ class TamanhoPersistivelEmBDR implements TamanhoPersistivel {
 
             $resposta = $ps->fetch();
 
-            return new Tamanho( $resposta["id"], CampoUnicoTamanho::from( $resposta["sigla"] ) );
+            return new Tamanho( (int) $resposta["id"], CampoUnicoTamanho::from( $resposta["sigla"] ) );
         }
         catch ( RuntimeException $erro ) {
             throw new RuntimeException( "Erro ao buscar tamanho - ".$erro->getMessage() );
