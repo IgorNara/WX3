@@ -8,8 +8,6 @@ $dados = json_decode( file_get_contents( "php://input" ), true ) ?? [];
 $logica = obterLogica();
 $conexao = getConexao();
 
-$gestorTransacao = new GestorTransacao( $conexao );
-
 $rota = new Rota( $_SERVER, $dados );
 $arrayRotas = require_once __DIR__ . "/src/rotas.php";
 

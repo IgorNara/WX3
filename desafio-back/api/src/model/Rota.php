@@ -21,8 +21,8 @@ class Rota {
        $rota =  $rotas[ $this->logica ][ $this->metodo ];
        if($rota){
             try{
-                if( $this->dados ) $rota( $this->dados );
-                else if ( $this->parametro ) $rota( $this->parametro );
+                if( ! empty( $this->dados ) ) $rota( $this->dados );
+                else if ( ! empty( $this->parametro ) ) $rota( $this->parametro );
                 else $rota();
             }
             catch (RuntimeException $e) {
