@@ -6,18 +6,18 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit7b6ac02b3fad6638879df856320de8de
 {
-    public static $prefixLengthsPsr4 = array (
-        'W' => 
-        array (
-            'Wx3\\Ecommerce\\' => 14,
-        ),
-    );
-
-    public static $prefixDirsPsr4 = array (
-        'Wx3\\Ecommerce\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src',
-        ),
+    public static $fallbackDirsPsr4 = array (
+        0 => __DIR__ . '/../..' . '/src',
+        1 => __DIR__ . '/../..' . '/src/controller',
+        2 => __DIR__ . '/../..' . '/src/excecoes',
+        3 => __DIR__ . '/../..' . '/src/model',
+        4 => __DIR__ . '/../..' . '/src/model/categoria',
+        5 => __DIR__ . '/../..' . '/src/model/cliente',
+        6 => __DIR__ . '/../..' . '/src/model/endereco',
+        7 => __DIR__ . '/../..' . '/src/model/produto',
+        8 => __DIR__ . '/../..' . '/src/model/tamanho-produto',
+        9 => __DIR__ . '/../..' . '/src/model/venda',
+        10 => __DIR__ . '/../..' . '/src/model/venda-produto-tamanho',
     );
 
     public static $classMap = array (
@@ -27,8 +27,7 @@ class ComposerStaticInit7b6ac02b3fad6638879df856320de8de
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7b6ac02b3fad6638879df856320de8de::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7b6ac02b3fad6638879df856320de8de::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInit7b6ac02b3fad6638879df856320de8de::$fallbackDirsPsr4;
             $loader->classMap = ComposerStaticInit7b6ac02b3fad6638879df856320de8de::$classMap;
 
         }, null, ClassLoader::class);

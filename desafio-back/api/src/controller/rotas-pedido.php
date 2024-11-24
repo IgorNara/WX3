@@ -6,6 +6,7 @@ $enderecoPersistivel = new EnderecoPersistivelEmBDR( $conexao );
 $vendaPersistivel = new VendaPersistivelEmBDR( $conexao );
 $produtoPersistivel = new ProdutoPersistivelEmBDR( $conexao );
 $tamanhoProdutoPersistivel = new TamanhoProdutoPersistivelEmBDR( $conexao );
+$gestorTransacao = new GestorTransacao( $conexao );
 
 // formato esperado em $dados = {
 //     idCliente,
@@ -30,8 +31,9 @@ $tamanhoProdutoPersistivel = new TamanhoProdutoPersistivelEmBDR( $conexao );
 
 return [
     "/pedido" => [
-        "POST" => function ( $dados ) use ( $vptPersistivel, $enderecoPersistivel, $vendaPersistivel, $produtoPersistivel, $tamanhoProdutoPersistivel ) {            
+        "POST" => function ( $dados ) use ( $vptPersistivel, $enderecoPersistivel, $vendaPersistivel, $produtoPersistivel, $tamanhoProdutoPersistivel, $gestorTransacao ) {            
             try {
+                $gestorTransacao->iniciar();
                 $dadosEndereco = $dados["endereco"];
                 $endereco = new Endereco( $dadosEndereco["id"] );
                 if( ! $endereco->id > 0 ) { // Insere um novo endereço
@@ -56,8 +58,10 @@ return [
 
                 // Verifica se o cliente forneceu algum valor inválido
                 $problemasVenda = $venda->getProblemas();
-                if( ! empty( $problemasVenda ) )
+                if( ! empty( $problemasVenda ) ) {
+                    $gestorTransacao->reverter();
                     respostaJson( true, "Erro ao efetuar pedido - DADOS INVÁLIDOS", 500, $problemasVenda );
+                }
 
                 $venda->id = $vendaPersistivel->inserir( $venda );
 
@@ -73,14 +77,31 @@ return [
 
                         // Insere a relação
                         $vpt = new VendaProdutoTamanho( $venda, $produto, $tamanho, $dadosTamanho["qtd"], $precoVenda );
+                        $vpt->validar();
+
+                        $problemasVpt = $vpt->getProblemas();
+                        if( ! empty( $problemasVpt ) ) {
+                            $gestorTransacao->reverter();
+                            respostaJson( true, "Erro ao efetuar pedido - DADOS INVÁLIDOS", 500, $problemasVpt );
+                        }
+
                         $vptPersistivel->inserir( $vpt );
 
                         // Altera o estoque desse tamanho do produto
                         $tamanhoProduto = $tamanhoProdutoPersistivel->obterPeloId( $produto->id, $tamanho->id );
                         $tamanhoProduto->qtd -= $dadosTamanho["qtd"];
+                        $tamanhoProduto->validar();
+
+                        $problemasTamanhoProduto = $tamanhoProduto->getProblemas();
+                        if( ! empty( $problemasTamanhoProduto ) ) {
+                            $gestorTransacao->reverter();
+                            respostaJson( true, "Erro ao efetuar pedido - DADOS INVÁLIDOS", 500, $problemasTamanhoProduto );
+                        }
+
                         $tamanhoProdutoPersistivel->alterar( $tamanhoProduto );
                     }    
                 }
+                $gestorTransacao->confirmar();
                 respostaJson( false, "Pedido efetuado com sucesso! Nº do pedido: {$venda->id}", 200 );
             }
             catch (RuntimeException $e) {

@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Wx3\\Ecommerce\\' => array($baseDir . '/src'),
+    '' => array($baseDir . '/src', $baseDir . '/src/controller', $baseDir . '/src/excecoes', $baseDir . '/src/model', $baseDir . '/src/model/categoria', $baseDir . '/src/model/cliente', $baseDir . '/src/model/endereco', $baseDir . '/src/model/produto', $baseDir . '/src/model/tamanho-produto', $baseDir . '/src/model/venda', $baseDir . '/src/model/venda-produto-tamanho'),
 );
