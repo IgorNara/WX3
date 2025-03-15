@@ -24,10 +24,10 @@ interface ClientePersistivel {
      * Remove um cliente pelo id.
      *
      * @param int $id
-     * @return int linhas afetadas
+     * @return bool
      * @throws RuntimeException
      */
-    public function excluirPeloId( int $id ): int;
+    public function excluirPeloId( int $id ): bool;
 
     /**
      * Obtem um cliente pelo id.

@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 
 
-class Tamanho {
+class Tamanho implements JsonSerializable {
     private array $problemas = [];
 
     public function __construct(
@@ -20,6 +20,14 @@ class Tamanho {
         // sigla
         if( ! $this->sigla->name )
             $this->problemas[] = "Fornecer o tamanho é obrigatório.";
+    }
+
+
+    public function jsonSerialize(): array {
+        return [
+            "id" => $this->id,
+            "sigla" => $this->sigla->value
+        ];
     }
 }
 

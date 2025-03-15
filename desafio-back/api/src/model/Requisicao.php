@@ -25,7 +25,7 @@ class Requisicao {
 
         $this->arquivoAtual = $this->dadosReq[ 'PHP_SELF' ]; 
 
-        $this->diretorioRaiz = strtolower( dirname( $this->arquivoAtual ) ); 
+        $this->diretorioRaiz = dirname( $this->arquivoAtual ); 
 
         $this->rota = str_replace( $this->diretorioRaiz, '', $this->url ); 
 

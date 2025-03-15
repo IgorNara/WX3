@@ -1,54 +1,31 @@
 <?php
 declare(strict_types = 1);
 
-$enderecoPersistivel = new EnderecoPersistivelEmBDR( $conexao );
+$persistivel = new EnderecoPersistivelEmBDR( $conexao );
+$controller = new Controller( $persistivel );
 
 return [
     "/endereco" => [
-        "GET" => function () use ( $enderecoPersistivel ) {
-            $enderecos = $enderecoPersistivel->obterTodos();
-            respostaJson( false, "Listagem efetuada com sucesso!", 200, $enderecos );
+        "GET" => function () use ( $controller ) {
+            $controller->get();
         },
 
-        "POST" => function ( $dados ) use ( $enderecoPersistivel ) {
-            $endereco = new Endereco( 0, $dados["logradouro"], $dados["cidade"], $dados["bairro"], $dados["cep"], $dados["numero"], $dados["complemento"] );
-            $endereco->validar();
-
-            $problemas = $endereco->getProblemas();
-            if( ! empty( $problemas ) ) 
-                respostaJson( true, "Erro ao efetuar cadastro - DADOS INVÁLIDOS", 500, $problemas );
-            
-            $idGerado = $enderecoPersistivel->inserir( $endereco );
-            respostaJson( false, "Cadastro efetuado com sucesso! O id gerado foi $idGerado!", 201 );
+        "POST" => function ( $dados ) use ( $controller ) {
+            $controller->post( new Endereco( 0, $dados["logradouro"], $dados["cidade"], $dados["bairro"], $dados["cep"], $dados["numero"], $dados["complemento"] , ) );
         },
 
-        "PUT" => function ( $dados ) use ( $enderecoPersistivel ) {
-            $endereco = new Endereco( $dados["id"], $dados["logradouro"], $dados["cidade"], $dados["bairro"], $dados["cep"], $dados["numero"], $dados["complemento"] );
-            $endereco->validar();
-
-            $problemas = $endereco->getProblemas();
-            if( ! empty( $problemas ) ) 
-                respostaJson( true, "Erro ao efetuar alteração - DADOS INVÁLIDOS", 500, $problemas );
-
-            $enderecoPersistivel->alterar( $endereco );
-            respostaJson( false, "Alteração efetuada com sucesso!", 200 );
+        "PUT" => function ( $dados ) use ( $controller ) {
+            $controller->put( new Endereco( $dados["id"], $dados["logradouro"], $dados["cidade"], $dados["bairro"], $dados["cep"], $dados["numero"], $dados["complemento"] ) );
         }
     ],
 
     "/endereco/:id" => [
-        "GET" => function ( $parametros ) use ( $enderecoPersistivel ) {
-            if( ! $enderecoPersistivel->existeComId( (int) $parametros[0] ) )
-                respostaJson( true, "Informações não encontradas!", 400 );
-
-            respostaJson( false, "Informações listadas com sucesso!", 200, $enderecoPersistivel->obterPeloId( (int) $parametros[0] ) );
+        "GET" => function ( $parametros ) use ( $controller ) {
+            $controller->get( (int) $parametros[0] );
         },  
 
-        "DELETE" => function ( $parametros ) use ( $enderecoPersistivel ) {
-            if( ! $enderecoPersistivel->existeComId( (int) $parametros[0] ) )
-                respostaJson( true, "Informações não encontradas!", 400 );
-
-            $enderecoPersistivel->excluirPeloId( (int) $parametros[0] );
-            respostaJson( false, "Exclusão efetuada com sucesso!", 204 );
+        "DELETE" => function ( $parametros ) use ( $controller ) {
+            $controller->delete( (int) $parametros[0] );
         }
     ]
 ]

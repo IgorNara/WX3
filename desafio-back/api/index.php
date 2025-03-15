@@ -12,7 +12,9 @@ $rota = new Rota( $_SERVER, $dados );
 $arrayRotas = require_once __DIR__ . "/src/rotas.php";
 
 foreach( $arrayRotas as $rotas ) {
-    if( isset( $rotas[$logica] ) ) 
+    if( isset( $rotas[$logica] ) ) {
         $rota->executarRota( $rotas );
+    }
+       
 }
 ?>

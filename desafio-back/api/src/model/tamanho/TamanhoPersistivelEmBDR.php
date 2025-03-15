@@ -2,68 +2,33 @@
 declare( strict_types=1 );
 
 
-class TamanhoPersistivelEmBDR implements TamanhoPersistivel {
-    private PDO $conexao;
-
-    public function __construct ( PDO $conexao ) {
-        $this->conexao = $conexao;
-    }
-
+class TamanhoPersistivelEmBDR extends PersistivelEmBDR implements TamanhoPersistivel {
 
     /** @inheritDoc */
     public function obterTodos(): array {
-        $tamanhos = [];
-        try {
-            $sql = "SELECT * FROM tamanho";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->execute();
-
-            $resposta = $ps->fetchAll();
-            foreach( $resposta as $tamanho ) {
-                $tamanhos[] = new Tamanho( (int) $tamanho["id"], CampoUnicoTamanho::from( $tamanho["sigla"] ) );
-            }
-            return $tamanhos;
+        $sql = "SELECT id, sigla AS stringSigla FROM tamanho";
+        $tamanhos = $this->carregarObjetosDaClasse( $sql, Tamanho::class, [], "Erro ao carregar tamanhos." );
+        foreach( $tamanhos as $tamanho ) {
+            $tamanho->sigla = CampoUnicoTamanho::from( $tamanho->stringSigla );
         }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao listar tamanhos - ".$erro->getMessage() );
-        }
+        return $tamanhos;
     }
 
 
     /** @inheritDoc */
     public function obterPeloId( int $id ): Tamanho {
-        try {
-            $sql = "SELECT * FROM tamanho WHERE id = ?";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->bindParam( 1, $id );
-            $ps->execute();
-
-            $resposta = $ps->fetch();
-
-            return new Tamanho( (int) $resposta["id"], CampoUnicoTamanho::from( $resposta["sigla"] ) );
-        }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao buscar tamanho - ".$erro->getMessage() );
-        }
+        $sql = "SELECT id, sigla AS stringSigla FROM tamanho WHERE id = ?";
+        $tamanho = $this->primeiroObjetoDaClasse( $sql, Tamanho::class, [ $id ], "Erro ao carregar tamanho." );
+        $tamanho->sigla = CampoUnicoTamanho::from( $tamanho->stringSigla );
+        return $tamanho;
     }
 
 
     /** @inheritDoc */
     public function existeComId( int $id ): bool {
-        try {
-            $sql = "SELECT id FROM tamanho WHERE id = ?";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->bindParam( 1, $id );
-            $ps->execute();
-
-            return $ps->rowCount() > 0;
-        }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao verificar tamanho - ".$erro->getMessage() );
-        }
+        $sql = "SELECT id FROM tamanho WHERE id = ?";
+        $tamanho = $this->primeiroObjetoDaClasse( $sql, Tamanho::class, [ $id ], "Erro ao verificar tamanho." );
+        return $tamanho !== null;
     }
 }
 ?>

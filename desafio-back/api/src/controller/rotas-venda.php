@@ -2,23 +2,20 @@
 declare(strict_types = 1);
 
 
-$vptPersistivel = new VendaProdutoTamanhoPersistivelEmBDR( $conexao );
+$persistivel = new VendaProdutoTamanhoPersistivelEmBDR( $conexao );
+$controller = new Controller( $persistivel );
 
 
 return [
     "/venda" => [
-        "GET" => function () use ( $vptPersistivel ) {
-            $vpts = $vptPersistivel->obterTodos();
-            respostaJson( false, "Listagem efetuada com sucesso!", 200, $vpts );
+        "GET" => function () use ( $controller ) {
+            $controller->get();
         }
     ],
 
     "/venda/:id" => [
-        "GET" => function ( $parametros ) use ( $vptPersistivel ) {
-            if( ! $vptPersistivel->existeComIdVenda( (int) $parametros[0] ) )
-                respostaJson( true, "Informações não encontradas!", 400 );
-
-            respostaJson( false, "Informações listadas com sucesso!", 200, $vptPersistivel->obterPeloIdVenda( (int) $parametros[0] ) );
+        "GET" => function ( $parametros ) use ( $controller ) {
+            $controller->get( (int) $parametros[0] );
         }
     ]
 ]

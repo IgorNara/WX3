@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 
 
-class Cliente {
+class Cliente implements JsonSerializable {
     private array $problemas = [];
 
     public function __construct(
@@ -71,6 +71,16 @@ class Cliente {
             else if( $mes === intval( date("m") ) && $dia > intval( date("d") ) )
                 $this->problemas[] = "Só é permitido maiores de 18 anos.";
         }
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            "id" => $this->id,
+            "nomeCompleto" => $this->nomeCompleto,
+            "cpf" => $this->cpf,
+            "dataNascimento" => $this->dataNascimento,
+            "senha" => $this->senha
+        ];
     }
 }
 

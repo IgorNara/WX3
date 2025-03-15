@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 
 
-class Endereco {
+class Endereco implements JsonSerializable {
     private array $problemas = [];
 
     public function __construct(
@@ -52,6 +52,19 @@ class Endereco {
         // Complemento
         if( $this->complemento && strlen( $this->logradouro ) > 60 )
             $this->problemas[] = "O complemento deve ter no máximo 60 caracteres.";
+    }
+
+
+    public function jsonSerialize(): array {
+        return [
+            "id" => $this->id,
+            "logradouro" => $this->logradouro,
+            "cidade" => $this->cidade,
+            "bairro" => $this->bairro,
+            "cep" => $this->cep,
+            "numero" => $this->numero,
+            "complemento" => $this->complemento
+        ];
     }
 }
 

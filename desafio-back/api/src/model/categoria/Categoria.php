@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-class Categoria {
+class Categoria implements JsonSerializable {
     private array $problemas = [];
 
     public function __construct( 
@@ -24,6 +24,15 @@ class Categoria {
         // Descrição
         if( strlen( $this->descricao ) <= 3 || strlen( $this->descricao ) > 255 )
             $this->problemas[] = "A descrição da categoria deve ter no mínimo 4 e no máximo 30 caracteres.";
+    }
+
+
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'nome' => $this->nome,
+            'descricao' => $this->descricao
+        ];
     }
 }
 

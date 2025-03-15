@@ -20,23 +20,23 @@ interface TamanhoProdutoPersistivel {
     public function inserir( TamanhoProduto $tamanhoProduto ): void;
 
     /**
-     * Obtem um tamanho de produto
-     *
-     * @param int $idProduto 
-     * @param int $idTamanho
-     * @return TamanhoProduto
-     * @throws RuntimeException
-     */
-    public function obterPeloId( int $idProduto, int $idTamanho ): TamanhoProduto;
-
-    /**
-     * Obtem um tamanho de produto
+     * Obtem os tamanhos de um produto
      *
      * @param int $idProduto 
      * @return array<TamanhoProduto>
      * @throws RuntimeException
      */
-    public function obterPeloIdProduto( int $idProduto ): array;
+    public function obterPeloId( int $idProduto ): array;
+
+    /**
+     * Obtem o tamanho de um produto
+     * 
+     * @param int $idProduto
+     * @param int $idTamanho
+     * @return TamanhoProduto
+     * @throws RuntimeException
+     */
+    public function obterPeloIdProdutoTamanho( int $idProduto, int $idTamanho ): TamanhoProduto;
 
     /**
      * Atualiza a quantidade de um tamanho de produto
@@ -54,5 +54,5 @@ interface TamanhoProdutoPersistivel {
      * @return bool indica se existe
      * @throws RuntimeException
      */
-    public function existeComIdProduto( int $idProduto  ): bool;
+    public function existeComId( int $idProduto  ): bool;
 }

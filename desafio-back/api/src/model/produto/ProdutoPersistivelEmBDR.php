@@ -2,175 +2,88 @@
 declare( strict_types=1 );
 
 
-class ProdutoPersistivelEmBDR implements ProdutoPersistivel {
-    private PDO $conexao;
-
-    public function __construct ( PDO $conexao ) {
-        $this->conexao = $conexao;
-    }
-
-
+class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersistivel {
 
     /** @inheritDoc */
     public function inserir( Produto $produto ): int {
-        try {    
-            $respostaIdProduto = gerarId( "produto" );
-            if( $respostaIdProduto["erro"] ) 
-                respostaJson( true, $respostaIdProduto["msg"], 500 );
-
-            $sql = "INSERT INTO produto ( id, idCategoria, nome, arrayCores, arrayUrlImg, preco, descricao, dataCadastro, peso ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->bindParam( 1, $produto->id );
-            $ps->bindParam( 2, $produto->categoria->id );
-            $ps->bindParam( 3, $produto->nome );
-            $ps->bindParam( 4, json_encode( $produto->cores ) );
-            $ps->bindParam( 5, json_encode( $produto->urls, JSON_UNESCAPED_SLASHES ) );
-            $ps->bindParam( 6, $produto->preco );
-            $ps->bindParam( 7, $produto->descricao );
-            $ps->bindParam( 8, $produto->dataCadastro );
-            $ps->bindParam( 9, $produto->peso );
-            $ps->execute();
-
-            return intval( $this->conexao->lastInsertId() );
-        }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao inserir produto - ".$erro->getMessage() );
-        }  
+        $sql = "INSERT INTO produto ( idCategoria, nome, arrayCores, arrayUrlImg, preco, descricao, dataCadastro, peso ) 
+                       VALUES ( :categoria, :nome, :cores, :urls, :preco, :descricao, :dataCadastro, :peso )";
+        $arrayProduto = $produto->jsonSerialize();
+        unset( $arrayProduto["id"] );
+        $arrayProduto["categoria"] = $arrayProduto["categoria"]->id;
+        // $arrayProduto["urls"] = array_map( fn( $img ) => salvarImg( $img, "../api/imagens/produtos/" ), $arrayProduto["urls"] );
+        $arrayProduto["urls"] = json_encode( $arrayProduto["urls"], JSON_UNESCAPED_SLASHES );
+        $arrayProduto["cores"] = json_encode( $arrayProduto["cores"] );
+        $this->executar( $sql, $arrayProduto, "Erro ao inserir produto." );
+        return $this->ultimoIdGerado();
     }
 
 
     /** @inheritDoc */
     public function alterar( Produto $produto ): int {
-        try {
-            $sql = "UPDATE produto SET idCategoria = ?, nome = ?, arrayCores = ?, arrayUrlImg = ?, preco = ?, descricao = ?, dataCadastro = ?, peso = ? WHERE id = ?";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->bindParam( 1, $produto->categoria->id );
-            $ps->bindParam( 2, $produto->nome );
-            $ps->bindParam( 3, json_encode( $produto->cores ) );
-            $ps->bindParam( 4, json_encode( $produto->urls ) );
-            $ps->bindParam( 5, $produto->preco );
-            $ps->bindParam( 6, $produto->descricao );
-            $ps->bindParam( 7, $produto->dataCadastro );
-            $ps->bindParam( 8, $produto->peso );
-            $ps->bindParam( 9, $produto->id );
-            $ps->execute();
-
-            return $ps->rowCount();
-        }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao alterar produto - ".$erro->getMessage() );
-        }
+        $sql = "UPDATE produto SET idCategoria = :categoria, nome = :nome, arrayCores = :cores, arrayUrlImg = :urls, 
+                       preco = :preco, descricao = :descricao, dataCadastro = :dataCadastro, peso = :peso WHERE id = :id";
+        $arrayProduto = $produto->jsonSerialize();
+        $arrayProduto["categoria"] = $arrayProduto["categoria"]->id;
+        // $arrayProduto["urls"] = array_map( fn( $img ) => salvarImg( $img, "../api/imagens/produtos/" ), $arrayProduto["urls"] );
+        $arrayProduto["urls"] = json_encode( $arrayProduto["urls"], JSON_UNESCAPED_SLASHES );
+        $arrayProduto["cores"] = json_encode( $arrayProduto["cores"] );
+        $ps = $this->executar( $sql, $arrayProduto, "Erro ao alterar produto." );
+        return $ps->rowCount();
     }
 
 
     /** @inheritDoc */
-    public function excluirPeloId( int $id ): int {
-        try {
-            $sql = "DELETE FROM produto WHERE id = ?";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->bindParam( 1, $id );
-            $ps->execute();
-
-            return $ps->rowCount();
-        }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao excluir produto - ".$erro->getMessage() );
-        }
+    public function excluirPeloId( int $id ): bool {
+        $arrayProduto = ( $this->obterPeloId( $id ) )->jsonSerialize();
+        array_map( fn( $url ) => excluirImg( $url ), $arrayProduto["urls"] );
+        return $this->removerRegistroComId( $id, "produto", "Erro ao excluir produto." );
     }
 
 
     /** @inheritDoc */
     public function obterPeloId( int $id ): Produto {
-        try {
-            $sql = "SELECT p.*, c.nome AS categoria, c.descricao AS descricaoCategoria 
-                    FROM produto p JOIN categoria c ON ( p.idCategoria = c.id ) WHERE p.id = ?";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->bindParam( 1, $id );
-            $ps->execute();
-
-            $resposta = $ps->fetch();
-
-            $categoria = new Categoria( (int) $resposta["idCategoria"], $resposta["categoria"], $resposta["descricaoCategoria"] );
-
-            return new Produto( 
-                (int) $resposta["id"],
-                $categoria,
-                $resposta["nome"],
-                (array) $resposta["arrayCores"],
-                (array) $resposta["arrayUrlImg"],
-                (float) $resposta["preco"],
-                $resposta["descricao"],
-                $resposta["dataCadastro"],
-                (float) $resposta["peso"]
-            );
-        }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao buscar produto - ".$erro->getMessage() );
-        }
+        $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
+                       c.id AS idCategoria, c.nome AS nomeCategoria, c.descricao AS descricaoCategoria
+                FROM venda_produto_tamanho vpt
+                JOIN produto p ON ( vpt.idProduto = p.id )
+                JOIN categoria c ON ( p.idCategoria = c.id )
+                GROUP BY p.id, c.id ORDER BY SUM( vpt.qtd ) DESC"; // LIMIT ?
+        $produto = $this->primeiroObjetoDaClasse( $sql, Produto::class, [], "Erro ao carregar produto." );
+        $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
+        $produto->categoria = $categoria;
+        return $produto;
     }
 
 
     /** @inheritDoc */
     public function existeComId( int $id ): bool {
-        try {
-            $sql = "SELECT id FROM produto WHERE id = ?";
-
-            $ps = $this->conexao->prepare( $sql );
-            $ps->bindParam( 1, $id );
-            $ps->execute();
-
-            return $ps->rowCount() > 0;
-        }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao verificar produto - ".$erro->getMessage() );
-        }
+        $sql = "SELECT id FROM produto WHERE id = ?";
+        $produto = $this->primeiroObjetoDaClasse( $sql, Produto::class, [ $id ], "Erro ao verificar produto." );
+        return $produto !== null;
     }
 
 
     /**
-     * Retorna uma lista de produtos ordenada em ordem decrascente com base no seu total de vendas
+     * Retorna uma lista de produtos ordenada em ordem decrescente com base no seu total de vendas
      * 
      * @return array<Produto>
      * @throws RuntimeException
      */
     public function rankProdutosMaisVendidos(): array {
-        $produtos = [];
-        try {
-            $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
-                           p.idCategoria, c.nome AS categoria, c.descricao AS descricaoCategoria
-                    FROM venda_produto_tamanho vpt
-                    JOIN produto p ON ( vpt.idProduto = p.id )
-                    JOIN categoria c ON ( p.idCategoria = c.id )
-                    GROUP BY p.id, c.id ORDER BY SUM( vpt.qtd ) DESC"; // LIMIT ?
-            
-            $ps = $this->conexao->prepare( $sql );
-            $ps->execute();
+        $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
+                       c.id AS idCategoria, c.nome AS nomeCategoria, c.descricao AS descricaoCategoria
+                FROM venda_produto_tamanho vpt
+                JOIN produto p ON ( vpt.idProduto = p.id )
+                JOIN categoria c ON ( p.idCategoria = c.id )
+                GROUP BY p.id, c.id ORDER BY SUM( vpt.qtd ) DESC"; // LIMIT ?
 
-            $resposta = $ps->fetchAll();
-            foreach( $resposta as $produto ) {
-                $categoria = new Categoria( (int) $produto["idCategoria"], $produto["categoria"], $produto["descricaoCategoria"] );
-                
-                $produtos[] = new Produto( 
-                    (int) $produto["id"],
-                    $categoria,
-                    $produto["nome"],
-                    (array) $produto["arrayCores"],
-                    (array) $produto["arrayUrlImg"],
-                    (float) $produto["preco"],
-                    $produto["descricao"],
-                    $produto["dataCadastro"],
-                    (float) $produto["peso"]
-                );
-            }
-            return $produtos;
+        $produtos = $this->carregarObjetosDaClasse( $sql, Produto::class, [], "Erro ao carregar produtos." );
+        foreach ($produtos as $produto) {
+            $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
+            $produto->categoria = $categoria;
         }
-        catch ( RuntimeException $erro ) {
-            throw new RuntimeException( "Erro ao listar rank dos produtos mais vendidos - ".$erro->getMessage() );
-        }
+        return $produtos;
     }
 }
 ?>

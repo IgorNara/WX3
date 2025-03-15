@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 
 
-class Venda {
+class Venda implements JsonSerializable {
     private array $problemas = [];
     public float $valorFrete = 10.00;
     public int $percentualDesconto = 0;
@@ -10,11 +10,14 @@ class Venda {
 
     public function __construct(
         public int $id = 0,
-        public Cliente $cliente,
-        public Endereco $endereco,
+        public ?Cliente $cliente = null,
+        public ?Endereco $endereco = null,
         public ?FormaPagamento $formaPagamento = null,
         public float $valorTotal = 0.0
-    ){
+    ){}
+
+
+    public function setPercentualDesconto():void {
         if( $this->formaPagamento->value === "Pix" )
             $this->percentualDesconto = 10;
     }
@@ -53,6 +56,19 @@ class Venda {
         // Forma Pagamento
         if( !$this->formaPagamento )
             $this->problemas[] = "Fornecer a forma de pagamento é obrigatório.";
+    }
+
+
+    public function jsonSerialize(): array {  
+        return [
+            "id" => $this->id,
+            "cliente" => $this->cliente,
+            "endereco" => $this->endereco,
+            "formaPagamento" => $this->formaPagamento,
+            "valorTotal" => $this->valorTotal,
+            "valorFrete" => $this->valorFrete,
+            "percentualDesconto" => $this->percentualDesconto
+        ];
     }
 }
 

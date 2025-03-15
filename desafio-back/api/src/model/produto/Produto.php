@@ -2,19 +2,19 @@
 declare(strict_types = 1);
 
 
-class Produto {
+class Produto implements JsonSerializable {
     private array $problemas = [];
 
     public function __construct(
         public int $id = 0,
-        public Categoria $categoria,
+        public ?Categoria $categoria = null,
         public string $nome = "",
         public array $cores = [],
         public array $urls = [],
         public float $preco = 0.0,
         public string $descricao = "",
         public string $dataCadastro = "",
-        public float $peso = 0.0,
+        public float $peso = 0.0
     ){
       $this->setDataCadastro( $dataCadastro );
     }
@@ -58,6 +58,21 @@ class Produto {
         // Peso
         if( $this->peso <= 0 )
             $this->problemas[] = "O peso do produto precisa ser maior que zero.";
+    }
+
+
+    public function jsonSerialize(): array {
+        return [
+            "id" => $this->id,
+            "categoria" => $this->categoria,
+            "nome" => $this->nome,
+            "cores" => $this->cores,
+            "urls" => $this->urls,
+            "preco" => $this->preco,
+            "descricao" => $this->descricao,
+            "dataCadastro" => $this->dataCadastro,
+            "peso" => $this->peso,
+        ];
     }
 }
 

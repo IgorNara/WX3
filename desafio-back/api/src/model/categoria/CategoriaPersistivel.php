@@ -33,10 +33,10 @@ interface CategoriaPersistivel {
      * Remove uma categoria pelo id.
      *
      * @param int $id
-     * @return int linhas afetadas
+     * @return bool
      * @throws RuntimeException
      */
-    public function excluirPeloId( int $id ): int;
+    public function excluirPeloId( int $id ): bool;
 
     /**
      * Obtem uma categoria pelo id.

@@ -1,54 +1,31 @@
 <?php
 declare(strict_types = 1);
 
-$categoriaPersistivel = new CategoriaPersistivelEmBDR( $conexao );
+$persistivel = new CategoriaPersistivelEmBDR( $conexao );
+$controller = new Controller( $persistivel );
 
 return [
     "/categoria" => [
-        "GET" => function () use ( $categoriaPersistivel ) {
-            $categorias = $categoriaPersistivel->obterTodos();
-            respostaJson( false, "Listagem efetuada com sucesso!", 200, $categorias );
+        "GET" => function () use ( $controller ) { 
+            $controller->get();
         },
 
-        "POST" => function ( $dados ) use ( $categoriaPersistivel ) {
-            $categoria = new Categoria( 0, $dados["nome"], $dados["descricao"] );
-            $categoria->validar();
-
-            $problemas = $categoria->getProblemas();
-            if( ! empty( $problemas ) )
-                respostaJson( false, "Erro ao efetuar cadastro - DADOS INVÁLIDOS", 500, $problemas );
-
-            $idGerado = $categoriaPersistivel->inserir( $categoria );
-            respostaJson( false, "Cadastro efetuado com sucesso! O id gerado foi $idGerado!", 201 );
+        "POST" => function ( $dados ) use ( $controller ) { 
+            $controller->post( new Categoria( 0, $dados["nome"], $dados["descricao"] ) ); 
         },
 
-        "PUT" => function ( $dados ) use ( $categoriaPersistivel ) {
-            $categoria = new Categoria( $dados["id"], $dados["nome"], $dados["descricao"] );
-            $categoria->validar();
-
-            $problemas = $categoria->getProblemas();
-            if( ! empty( $problemas ) ) 
-                respostaJson( true, "Erro ao efetuar alteração - DADOS INVÁLIDOS", 500, $problemas );
-
-            $categoriaPersistivel->alterar( $categoria );
-            respostaJson( false, "Alteração efetuada com sucesso!", 200 );
+        "PUT" => function ( $dados ) use ( $controller ) {
+            $controller->put( new Categoria( $dados["id"], $dados["nome"], $dados["descricao"] ) );
         }
     ],
 
     "/categoria/:id" => [
-        "GET" => function ( $parametros ) use ( $categoriaPersistivel ) {
-            if( ! $categoriaPersistivel->existeComId( (int) $parametros[0] ) )
-                respostaJson( true, "Informações não encontradas!", 400 );
-
-            respostaJson( false, "Informações listadas com sucesso!", 200, $categoriaPersistivel->obterPeloId( (int) $parametros[0] ) );
+        "GET" => function ( $parametros ) use ( $controller ) { 
+            $controller->get( (int) $parametros[0] ); 
         },
 
-        "DELETE" => function ( $parametros ) use ( $categoriaPersistivel ) {
-            if( ! $categoriaPersistivel->existeComId( (int) $parametros[0] ) )
-                respostaJson( true, "Informações não encontradas!", 400 );
-        
-            $categoriaPersistivel->excluirPeloId( (int) $parametros[0] );
-            respostaJson( false, "Exclusão efetuada com sucesso!", 204 );
+        "DELETE" => function ( $parametros ) use ( $controller ) { 
+            $controller->delete( (int) $parametros[0] ); 
         }
     ]
 ]

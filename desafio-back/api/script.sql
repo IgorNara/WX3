@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS cliente(
 
     CONSTRAINT unq_cliente_cpf UNIQUE ( cpf )
 )ENGINE=INNODB;
-INSERT INTO cliente ( nomeCompleto, cpf, dataNascimento) VALUES ( "Igor Vieira Nara", "14954793742", "2006-02-13" );
+INSERT INTO cliente ( nomeCompleto, cpf, dataNascimento, senha ) VALUES ( "Igor Vieira Nara", "14954793742", "2006-02-13", "Teste1!" );
 
 
 CREATE TABLE IF NOT EXISTS categoria(
@@ -48,9 +48,8 @@ CREATE TABLE IF NOT EXISTS produto(
     dataCadastro DATE NOT NULL,
     peso DECIMAL(9,2) NOT NULL,
 
-    CONSTRAINT fk_produto___categoria_id FOREIGN KEY ( idCategoria ) REFERENCES categoria ( id ) ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT fk_produto___categoria_id FOREIGN KEY ( idCategoria ) REFERENCES categoria ( id ) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
-INSERT INTO produto ( idCategoria, nome, arrayCores, arrayUrlImg, preco, descricao, dataCadastro, peso ) VALUES ( 1, "Blusa", "[vermelho, verde, preto]", "[url1.png, url2.png]", 49.99, "Blusa", "2024-11-19", 2.5 );
 
 
 CREATE TABLE IF NOT EXISTS tamanho(
@@ -71,7 +70,6 @@ CREATE TABLE IF NOT EXISTS tamanho_produto(
     CONSTRAINT fk_tamanho_produto__produto_id FOREIGN KEY ( idProduto ) REFERENCES produto ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_tamanho_produto__tamanho_id FOREIGN KEY ( idTamanho ) REFERENCES tamanho ( id ) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
-INSERT INTO tamanho_produto ( idProduto, idTamanho, qtd ) VALUES ( 1, 1, 5 ), ( 1, 2, 10 ), ( 1, 3, 3 );
 
 
 CREATE TABLE IF NOT EXISTS venda(
@@ -86,7 +84,7 @@ CREATE TABLE IF NOT EXISTS venda(
     CONSTRAINT fk_venda__cliente_id FOREIGN KEY ( idCliente ) REFERENCES cliente ( id ),
     CONSTRAINT fk_venda__endereco_id FOREIGN KEY ( idEndereco ) REFERENCES endereco ( id )
 )ENGINE=INNODB;
-INSERT INTO venda ( idCliente, idEndereco, valorTotal, valorFrete, percentualDesconto, formaPagamento ) VALUES ( 1, 1, 59.99, 10.00, 10, "Pix" );
+-- INSERT INTO venda ( idCliente, idEndereco, valorTotal, valorFrete, percentualDesconto, formaPagamento ) VALUES ( 1, 1, 59.99, 10.00, 10, "Pix" );
 
 
 CREATE TABLE IF NOT EXISTS venda_produto_tamanho(
@@ -97,8 +95,8 @@ CREATE TABLE IF NOT EXISTS venda_produto_tamanho(
     precoVenda DECIMAL(9,2) NOT NULL,
 
     PRIMARY KEY ( idVenda, idProduto, idTamanho ),
-    CONSTRAINT fk_venda_produto_tamanho__venda_id FOREIGN KEY ( idVenda ) REFERENCES venda ( id ) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT fk_venda_produto_tamanho__produto_id FOREIGN KEY ( idProduto ) REFERENCES produto ( id ) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT fk_venda_produto_tamanho__tamanho_id FOREIGN KEY ( idTamanho ) REFERENCES tamanho ( id ) ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT fk_venda_produto_tamanho__venda_id FOREIGN KEY ( idVenda ) REFERENCES venda ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_venda_produto_tamanho__produto_id FOREIGN KEY ( idProduto ) REFERENCES produto ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_venda_produto_tamanho__tamanho_id FOREIGN KEY ( idTamanho ) REFERENCES tamanho ( id ) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
-INSERT INTO venda_produto_tamanho ( idVenda, idProduto, idTamanho, qtd, precoVenda ) VALUES ( 1, 1, 1, 1, 49.99 );
+-- INSERT INTO venda_produto_tamanho ( idVenda, idProduto, idTamanho, qtd, precoVenda ) VALUES ( 1, 1, 1, 1, 49.99 );

@@ -2,23 +2,19 @@
 declare(strict_types = 1);
 
 
-$tamanhoPersistivel = new TamanhoPersistivelEmBDR( $conexao );
-
+$persistivel = new TamanhoPersistivelEmBDR( $conexao );
+$controller = new Controller( $persistivel );
 
 return [
     "/tamanho" => [
-        "GET" => function () use ( $tamanhoPersistivel ) {
-            $tamanhos = $tamanhoPersistivel->obterTodos();
-            respostaJson( false, "Listagem efetuada com sucesso!", 200, $tamanhos );
+        "GET" => function () use ( $controller ) {
+            $controller->get();
         }
     ],
 
     "/tamanho/:id" => [
-        "GET" => function ( $parametros ) use ( $tamanhoPersistivel ) {
-            if( ! $tamanhoPersistivel->existeComId( (int) $parametros[0] ) )
-                respostaJson( true, "Informações não encontradas!", 400 );
-
-            respostaJson( false, "Informações listadas com sucesso!", 200, $tamanhoPersistivel->obterPeloId( (int) $parametros[0] ) );
+        "GET" => function ( $parametros ) use ( $controller ) {
+            $controller->get( (int) $parametros[0] );
         }
     ]
 ]
