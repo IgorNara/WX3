@@ -45,11 +45,10 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
     public function obterPeloId( int $id ): Produto {
         $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
                        c.id AS idCategoria, c.nome AS nomeCategoria, c.descricao AS descricaoCategoria
-                FROM venda_produto_tamanho vpt
-                JOIN produto p ON ( vpt.idProduto = p.id )
+                FROM produto p
                 JOIN categoria c ON ( p.idCategoria = c.id )
-                GROUP BY p.id, c.id ORDER BY SUM( vpt.qtd ) DESC"; // LIMIT ?
-        $produto = $this->primeiroObjetoDaClasse( $sql, Produto::class, [], "Erro ao carregar produto." );
+                WHERE p.id = ?"; // LIMIT ?
+        $produto = $this->primeiroObjetoDaClasse( $sql, Produto::class, [ $id ], "Erro ao carregar produto." );
         $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
         $produto->categoria = $categoria;
         return $produto;

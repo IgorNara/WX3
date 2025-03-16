@@ -12,14 +12,12 @@ $tamanhoProdutoPersistivel = new TamanhoProdutoPersistivelEmBDR( $conexao );
 $controllerVPT = new Controller( $vptPersistivel );
 $controllerEndereco = new Controller( $enderecoPersistivel );
 $controllerVenda = new Controller( $vendaPersistivel );
-$controllerProduto = new Controller( $produtoPersistivel );
-$controllerTamanhoProduto = new Controller( $tamanhoProdutoPersistivel );
 
 $gestorTransacao = new GestorTransacao( $conexao );
 
 return [
     "/pedido" => [
-        "POST" => function ( $dados ) use ( $controllerVPT, $controllerEndereco, $controllerVenda, $controllerProduto, $controllerTamanhoProduto, $produtoPersistivel, $tamanhoProdutoPersistivel, $gestorTransacao ) {            
+        "POST" => function ( $dados ) use ( $controllerVPT, $controllerEndereco, $controllerVenda, $produtoPersistivel, $tamanhoProdutoPersistivel, $gestorTransacao ) {            
             $gestorTransacao->iniciar();
             $dadosEndereco = $dados["endereco"];
             $endereco = new Endereco( $dadosEndereco["id"] );
@@ -52,7 +50,7 @@ return [
                 // Cria uma relação entre venda, produto e tamanho para todos os tamanhos vendidos de cada produto
                 $dadosTamanhos = $dadosProduto["tamanhos"];
                 foreach( $dadosTamanhos as $dadosTamanho ) {
-                    $tamanho = new Tamanho( $dadosTamanho["id"] );
+                    $tamanho = new Tamanho( $dadosTamanho["id"] );  
                     $precoVenda = ( $produto->preco * $dadosTamanho["qtd"] );
 
                     // Insere a relação
