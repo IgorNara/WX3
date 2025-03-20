@@ -9,57 +9,38 @@ class Controller {
     ) {}
 
 
-    public function get( ?int $id = null ): void {     
-        if( ! $id ) 
-            respostaJson( false, "Informações listadas com sucesso!", 200, $this->persistivel->obterTodos() );
-        else if( $this->persistivel->existeComId( $id ) ) 
-            respostaJson( false, "Informações listadas com sucesso!", 200, $this->persistivel->obterPeloId( $id ) );
-        respostaJson( true, "Informações não encontradas!", 400 );
+    public function get( ?int $id = null ): array|object {     
+        if( ! $id ) {
+            return $this->persistivel->obterTodos();
+        }
+        else if( $this->persistivel->existeComId( $id ) ) {
+            return $this->persistivel->obterPeloId( $id );
+        }
+        throw new RuntimeException( "Informações não encontradas.", 400 );
     }
 
 
-    public function post( object $object ): void {
-        $object->validar();
-        $problemas = $object->getProblemas();
-        if( ! empty( $problemas ) )
-            respostaJson( false, "Erro ao efetuar cadastro - DADOS INVÁLIDOS", 500, $problemas );
-        $idGerado = $this->persistivel->inserir( $object );
-        respostaJson( false, "Cadastro efetuado com sucesso! O id gerado foi $idGerado!", 201 );
-    } 
-
-
-    public function postReturn( object $object ): array {
+    public function post( Validavel $object ): int {
         $object->validar();
         $problemas = $object->getProblemas();
         if( ! empty( $problemas ) ) 
-            return [
-                "erro" => true,
-                "msg" => "Erro ao efetuar cadastro - DADOS INVÁLIDOS",
-                "problemas" => $problemas
-            ];
-        return [
-            "erro" => false,
-            "msg" => "Cadastro efetuado com sucesso!",
-            "idGerado" => $this->persistivel->inserir( $object )
-        ];
+            throw new EntradaInvalidaException( "Erro ao cadastrar informações - Dados Inválidos", 500, $problemas );
+        return $this->persistivel->inserir( $object );
     } 
 
 
-    public function put( object $object ): void {
+    public function put( Validavel $object ): bool {
         $object->validar();
         $problemas = $object->getProblemas();
-        if( ! empty( $problemas ) )
-            respostaJson( false, "Erro ao efetuar alteração - DADOS INVÁLIDOS", 500, $problemas );
-        $this->persistivel->alterar( $object );
-        respostaJson( false, "Alteração efetuada com sucesso!", 200 );
+        if( ! empty( $problemas ) ) 
+            throw new EntradaInvalidaException( "Erro ao alterar informações - Dados inválidos", 500, $problemas );
+        return $this->persistivel->alterar( $object );
     }
 
 
     public function delete( int $id ): void {
-        if( ! $this->persistivel->existeComId( $id ) )
-            respostaJson( true, "Informações não encontradas!", 400 );
-        $this->persistivel->excluirPeloId( $id );
-        respostaJson( false, "Exclusão efetuada com sucesso!", 204 );
+        if( ! $this->persistivel->excluirPeloId( $id ) )
+            throw new RuntimeException( "Categoria não encontrada.", 400 );
     }
 }
 

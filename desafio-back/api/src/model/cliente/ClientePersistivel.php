@@ -55,4 +55,13 @@ interface ClientePersistivel {
      * @throws RuntimeException
      */
     public function existeComId( int $id ): bool;
+
+    /**
+     * Faz login como cliente.
+     * 
+     * @param Cliente $cliente
+     * @return void
+     * @throws RuntimeException
+     */
+    public function logar( Cliente $cliente ): void;
 }

@@ -41,7 +41,7 @@ class VendaProdutoTamanhoPersistivelEmBDR extends PersistivelEmBDR implements Ve
     public function inserir( VendaProdutoTamanho $vendaProdutoTamanho ): int {
         $sql = "INSERT INTO venda_produto_tamanho ( idVenda, idProduto, idTamanho, qtd, precoVenda ) 
                 VALUES ( :venda, :produto, :tamanho, :qtd, :precoVenda)";
-        $arrayVPT = $vendaProdutoTamanho->jsonSerialize();
+        $arrayVPT = $vendaProdutoTamanho->toArray();
         $arrayVPT["venda"] = $vendaProdutoTamanho->venda->id;
         $arrayVPT["produto"] = $vendaProdutoTamanho->produto->id;
         $arrayVPT["tamanho"] = $vendaProdutoTamanho->tamanho->id;

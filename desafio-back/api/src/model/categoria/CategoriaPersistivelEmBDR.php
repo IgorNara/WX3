@@ -14,7 +14,7 @@ class CategoriaPersistivelEmBDR extends PersistivelEmBDR implements CategoriaPer
     /** @inheritDoc */
     public function inserir( Categoria $categoria ): int {
         $sql = "INSERT INTO categoria ( nome, descricao ) VALUES ( :nome, :descricao )";
-        $arrayCategoria = $categoria->jsonSerialize();
+        $arrayCategoria = $categoria->toArray();
         unset( $arrayCategoria["id"] );
         $this->executar( $sql, $arrayCategoria, "Erro ao inserir categoria." );
         return $this->ultimoIdGerado();
@@ -22,10 +22,10 @@ class CategoriaPersistivelEmBDR extends PersistivelEmBDR implements CategoriaPer
 
 
     /** @inheritDoc */
-    public function alterar( Categoria $categoria ): int {
+    public function alterar( Categoria $categoria ): bool {
         $sql = "UPDATE categoria SET nome = :nome, descricao = :descricao WHERE id = :id";
-        $ps = $this->executar( $sql, $categoria->jsonSerialize(), "Erro ao alterar categoria." );
-        return $ps->rowCount();          
+        $ps = $this->executar( $sql, $categoria->toArray(), "Erro ao alterar categoria." );
+        return $ps->rowCount() > 0;          
     }
 
 

@@ -1,71 +1,75 @@
 <?php
 declare(strict_types = 1);
 
-// Persistíveis
-$produtoPersistivel = new ProdutoPersistivelEmBDR( $conexao );
-$tamanhoProdutoPersistivel = new TamanhoProdutoPersistivelEmBDR( $conexao );
-
-// Controllers
-$controllerProduto = new Controller( $produtoPersistivel );
-$controllerTamanhoProduto = new Controller( $tamanhoProdutoPersistivel );
-
+// Gestores
+$gestorProduto = new GestorProduto( $conexao );
+$gestorTamanhoProduto = new GestorTamanhoProduto( $conexao );
 $gestorTransacao = new GestorTransacao( $conexao );
 
 return [
     "/produto" => [
-        "GET" => function () use ( $controllerTamanhoProduto, $gestorTransacao ) {
-            $controllerTamanhoProduto->get();
+        "GET" => function () use ( $gestorProduto ) {
+            try {
+                $produtos = $gestorProduto->produtos();
+                respostaJson( false, "Produtos listados com sucesso!", 200, $produtos );
+            } catch ( RuntimeException $erro ) {
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
+            }
         },
 
-        "POST" => function ( $dados ) use ( $controllerProduto, $controllerTamanhoProduto, $gestorTransacao ) {
-            $gestorTransacao->iniciar();
-            $categoria = new Categoria( $dados["idCategoria"] );            
-
-            $produto = new Produto( 0, $categoria, $dados["nome"], $dados["cores"], $dados["imagens"], $dados["preco"], $dados["descricao"], $dados["dataCadastro"], $dados["peso"] );            
-            $respostaProduto = $controllerProduto->postReturn( $produto );
-            if( $respostaProduto["erro"] ) {
+        "POST" => function ( $dados ) use ( $gestorProduto, $gestorTamanhoProduto, $gestorTransacao ) {
+            try {
+                $gestorTransacao->iniciar();
+                $idGerado = $gestorProduto->cadastrar( $dados, $gestorTamanhoProduto );
+                $gestorTransacao->confirmar();
+                respostaJson( false, "Produto inserido com sucesso! O id gerado foi {$idGerado}", 201 );
+            } catch ( EntradaInvalidaException $erro ) {
                 $gestorTransacao->reverter();
-                respostaJson( true, $respostaProduto["msg"], 500, $respostaProduto["problemas"] );
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro->getProblems() );
+            } catch ( RuntimeException $erro ) {
+                $gestorTransacao->reverter();
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
             }
-
-            $dadosTamanhos = $dados["tamanhos"];
-            foreach( $dadosTamanhos as $dadosTamanho ) {
-                $tamanho = new Tamanho( $dadosTamanho["id"] );
-                $tamanhoProduto = new TamanhoProduto( new Produto( $respostaProduto["idGerado"] ), $tamanho, $dadosTamanho["qtd"] );
-                $respostaTamanhoProduto = $controllerTamanhoProduto->postReturn( $tamanhoProduto );
-                if( $respostaTamanhoProduto["erro"] ) {
-                    $gestorTransacao->reverter();
-                    respostaJson( true, $respostaTamanhoProduto["msg"], 500, $respostaTamanhoProduto["problemas"] );
-                }
-            }
-            
-            $gestorTransacao->confirmar();
-            respostaJson( false, "Cadastro efetuado com sucesso! O id gerado foi {$respostaProduto['idGerado']}!", 201 );
         },
 
-        "PUT" => function ( $dados ) use ( $controllerProduto ) {
-            $categoria = new Categoria( $dados["idCategoria"] );
-            $produto = new Produto( $dados["id"], $categoria, $dados["nome"], $dados["cores"], $dados["imagens"], $dados["preco"], $dados["descricao"], $dados["dataCadastro"], $dados["peso"] );
-            $controllerProduto->put( $produto );
+        "PUT" => function ( $dados ) use ( $gestorProduto ) {
+            try {
+                $gestorProduto->alterar( $dados );
+                respostaJson( false, "Produto atualizado com sucesso!", 200 );
+            } catch ( EntradaInvalidaException $erro ) {
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro->getProblems() );
+            } catch ( RuntimeException $erro ) {
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
+            }
         }
     ],
 
     "/produto/:id" => [
         /** Retorna todos os tamanhos de um produto */
-        "GET" => function ( $parametros ) use ( $controllerTamanhoProduto ) { 
-            $controllerTamanhoProduto->get( (int) $parametros[0] );            
+        "GET" => function ( $parametros ) use ( $gestorTamanhoProduto ) { 
+            try {
+                $tamanhosProduto = $gestorTamanhoProduto->tamanhosProdutoComIdProduto( (int) $parametros[0] );   
+                respostaJson( false, "Tamanhos do produto listados com sucesso!", 200, $tamanhosProduto );
+            } catch ( RuntimeException $erro ) {
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
+            }
         },
 
         /** Deleta o produto e, consequentemente, todas as relações entre ele seus tamanhos */
-        "DELETE" => function ( $parametros ) use ( $controllerProduto ) {
-            $controllerProduto->delete( (int) $parametros[0] );
+        "DELETE" => function ( $parametros ) use ( $gestorProduto ) {
+            try {
+                $gestorProduto->removerComId( (int) $parametros[0] );
+                respostaJson( false, "Produto excluído com sucesso!", 204 );
+            } catch ( RuntimeException $erro ) {
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
+            }
         }
     ],
 
     "/produto/rank" => [
-        "GET" => function () use ( $produtoPersistivel ) {
-            $produtos = $produtoPersistivel->rankProdutosMaisVendidos();
-            respostaJson( false, "Listagem efetuada com sucesso!", 200, $produtos );
+        "GET" => function () use ( $gestorProduto ) {
+            $produtos = $gestorProduto->rank();
+            respostaJson( false, "Rank dos produtos listado com sucesso!", 200, $produtos );
         }
     ]
 ]

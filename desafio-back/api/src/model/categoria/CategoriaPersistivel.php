@@ -21,13 +21,13 @@ interface CategoriaPersistivel {
     public function inserir( Categoria $categoria ): int;
 
     /**
-     * Atualiza uma categoria.
+     * Atualiza uma categoria. Retorna true se encontrou para atualização.
      *
      * @param Categoria $categoria
-     * @return int linhas afetadas
+     * @return bool 
      * @throws RuntimeException
      */
-    public function alterar( Categoria $categoria ): int;
+    public function alterar( Categoria $categoria ): bool;
 
     /**
      * Remove uma categoria pelo id.

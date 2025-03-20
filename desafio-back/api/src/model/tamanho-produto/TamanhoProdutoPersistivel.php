@@ -15,6 +15,7 @@ interface TamanhoProdutoPersistivel {
      * Adiciona um tamanho a um produto
      *
      * @param TamanhoProduto $tamanhoProduto
+     * @return void
      * @throws RuntimeException
      */
     public function inserir( TamanhoProduto $tamanhoProduto ): void;
@@ -26,7 +27,7 @@ interface TamanhoProdutoPersistivel {
      * @return array<TamanhoProduto>
      * @throws RuntimeException
      */
-    public function obterPeloId( int $idProduto ): array;
+    public function obterPeloIdProduto( int $idProduto ): array;
 
     /**
      * Obtem o tamanho de um produto

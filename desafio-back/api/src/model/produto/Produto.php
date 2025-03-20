@@ -2,8 +2,7 @@
 declare(strict_types = 1);
 
 
-class Produto implements JsonSerializable {
-    private array $problemas = [];
+class Produto extends Validavel implements JsonSerializable {
 
     public function __construct(
         public int $id = 0,
@@ -18,12 +17,7 @@ class Produto implements JsonSerializable {
     ){
       $this->setDataCadastro( $dataCadastro );
     }
-
-
-    public function getProblemas(): array {
-        return $this->problemas;
-    }
-
+    
 
     public function setDataCadastro( $dataCadastro ): void {
         $this->dataCadastro = join( "-", array_reverse( explode( "/", $dataCadastro ) ) );
@@ -58,6 +52,11 @@ class Produto implements JsonSerializable {
         // Peso
         if( $this->peso <= 0 )
             $this->problemas[] = "O peso do produto precisa ser maior que zero.";
+    }
+
+
+    public function toArray(): array {
+        return get_object_vars( $this );
     }
 
 

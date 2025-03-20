@@ -8,7 +8,7 @@ class VendaPersistivelEmBDR extends PersistivelEmBDR implements VendaPersistivel
     public function inserir( Venda $venda ): int {
         $sql = "INSERT INTO venda ( idCliente, idEndereco, valorTotal, valorFrete, percentualDesconto, formaPagamento ) 
                        VALUES ( :cliente, :endereco, :valorTotal, :valorFrete, :percentualDesconto, :formaPagamento )";
-        $arrayVenda = $venda->jsonSerialize();
+        $arrayVenda = $venda->toArray();
         unset( $arrayVenda["id"] );
         $arrayVenda["cliente"] = $venda->cliente->id;
         $arrayVenda["endereco"] = $venda->endereco->id;

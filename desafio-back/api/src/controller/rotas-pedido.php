@@ -1,83 +1,29 @@
 <?php
 declare(strict_types = 1);
 
-// Persistíveis
-$vptPersistivel = new VendaProdutoTamanhoPersistivelEmBDR( $conexao );
-$enderecoPersistivel = new EnderecoPersistivelEmBDR( $conexao );
-$vendaPersistivel = new VendaPersistivelEmBDR( $conexao );
-$produtoPersistivel = new ProdutoPersistivelEmBDR( $conexao );
-$tamanhoProdutoPersistivel = new TamanhoProdutoPersistivelEmBDR( $conexao );
-
-// Controllers
-$controllerVPT = new Controller( $vptPersistivel );
-$controllerEndereco = new Controller( $enderecoPersistivel );
-$controllerVenda = new Controller( $vendaPersistivel );
+$gestorVPT = new GestorVendaProdutoTamanho( $conexao );
+$gestorEndereco = new GestorEndereco( $conexao );
+$gestorVenda = new GestorVenda( $conexao );
+$gestorProduto = new GestorProduto( $conexao );
+$gestorTamanhoProduto = new GestorTamanhoProduto( $conexao );
 
 $gestorTransacao = new GestorTransacao( $conexao );
 
 return [
     "/pedido" => [
-        "POST" => function ( $dados ) use ( $controllerVPT, $controllerEndereco, $controllerVenda, $produtoPersistivel, $tamanhoProdutoPersistivel, $gestorTransacao ) {            
-            $gestorTransacao->iniciar();
-            $dadosEndereco = $dados["endereco"];
-            $endereco = new Endereco( $dadosEndereco["id"] );
-            if( ! $endereco->id > 0 ) { // Insere um novo endereço
-                $endereco = new Endereco( 0, $dadosEndereco["logradouro"], $dadosEndereco["cidade"], $dadosEndereco["bairro"], $dadosEndereco["cep"], $dadosEndereco["numero"] ?? null, $dadosEndereco["complemento"] ?? null );
-                $respostaEndereco = $controllerEndereco->postReturn( $endereco );
-                if( $respostaEndereco["erro"] ) {
-                    $gestorTransacao->reverter();
-                    respostaJson( true, $respostaEndereco["msg"], 500, $respostaEndereco["problemas"] );
-                }
-            }
-
-            $dadosProdutos = $dados["produtos"];
-
-            // Insere uma venda
-            $cliente = new Cliente( $dados["idCliente"] );
-            $venda = new Venda( 0, $cliente, $endereco, FormaPagamento::from( $dados["formaPagamento"] ) );
-            $venda->valorTotal = $venda->calcularValorTotal( $dadosProdutos, $produtoPersistivel );
-            $respostaVenda = $controllerVenda->postReturn( $venda );
-            if( $respostaVenda["erro"] ) {
+        "POST" => function ( $dados ) use ( $gestorTransacao, $gestorVPT, $gestorEndereco, $gestorVenda, $gestorProduto, $gestorTamanhoProduto ) {            
+            try {
+                $gestorTransacao->iniciar();
+                $idGeradoVenda = $gestorVPT->cadastrar( $dados, $gestorEndereco, $gestorTamanhoProduto, $gestorVenda, $gestorProduto );
+                $gestorTransacao->confirmar();
+                respostaJson( false, "Pedido efetuado com sucesso! Nº do pedido: {$idGeradoVenda}", 201 );
+            } catch ( EntradaInvalidaException $erro ) {
                 $gestorTransacao->reverter();
-                respostaJson( true, $respostaVenda["msg"], 500, $respostaVenda["problemas"] );
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro->getProblems() );
+            } catch ( RuntimeException $erro ) {
+                $gestorTransacao->reverter();
+                respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
             }
-            $venda->id = $respostaVenda["idGerado"];
-
-            foreach( $dadosProdutos as $dadosProduto ) {  
-                // Busca as informações do produto comprado  
-                $produto = $produtoPersistivel->obterPeloId( $dadosProduto["id"] );
-
-                // Cria uma relação entre venda, produto e tamanho para todos os tamanhos vendidos de cada produto
-                $dadosTamanhos = $dadosProduto["tamanhos"];
-                foreach( $dadosTamanhos as $dadosTamanho ) {
-                    $tamanho = new Tamanho( $dadosTamanho["id"] );  
-                    $precoVenda = ( $produto->preco * $dadosTamanho["qtd"] );
-
-                    // Insere a relação
-                    $vpt = new VendaProdutoTamanho( $venda, $produto, $tamanho, $dadosTamanho["qtd"], $precoVenda );
-                    $respostaVPT = $controllerVPT->postReturn( $vpt );
-                    if( $respostaVPT["erro"] ) {
-                        $gestorTransacao->reverter();
-                        respostaJson( true, $respostaVPT["msg"], 500, $respostaVPT["problemas"] );
-                    }
-
-                    // Altera o estoque desse tamanho do produto
-                    $tamanhoProduto = $tamanhoProdutoPersistivel->obterPeloIdProdutoTamanho( (int) $produto->id, (int) $tamanho->id );
-                    $tamanhoProduto->qtd -= $dadosTamanho["qtd"];
-                    $tamanhoProduto->validar();
-
-                    $problemasTamanhoProduto = $tamanhoProduto->getProblemas();
-                    if( ! empty( $problemasTamanhoProduto ) ) {
-                        $gestorTransacao->reverter();
-                        respostaJson( true, "Erro ao efetuar pedido - DADOS INVÁLIDOS", 500, $problemasTamanhoProduto );
-                    }
-
-                    $tamanhoProdutoPersistivel->alterar( $tamanhoProduto );
-
-                }    
-            }
-            $gestorTransacao->confirmar();
-            respostaJson( false, "Pedido efetuado com sucesso! Nº do pedido: {$venda->id}", 201 );
         }
     ]
 ]

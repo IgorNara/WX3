@@ -2,8 +2,7 @@
 declare(strict_types = 1);
 
 
-class Venda implements JsonSerializable {
-    private array $problemas = [];
+class Venda extends Validavel implements JsonSerializable {
     public float $valorFrete = 10.00;
     public int $percentualDesconto = 0;
     
@@ -23,20 +22,15 @@ class Venda implements JsonSerializable {
     }
 
 
-    public function calcularValorTotal( array $dadosProdutos, ProdutoPersistivelEmBDR $produtoPersistivel ): float {
+    public function calcularValorTotal( array $dadosProdutos, GestorProduto $gestorProduto ): float {
         $valorTotal = 0;
         foreach( $dadosProdutos as $dadosProduto ) {
-            $produto = $produtoPersistivel->obterPeloId( $dadosProduto["id"] );
+            $produto = $gestorProduto->produtoComId( $dadosProduto["id"] );
             foreach( $dadosProduto["tamanhos"] as $tamanho ) {
                 $valorTotal += ( $produto->preco * $tamanho["qtd"] );
             }
         }
         return $valorTotal;
-    }
-
-
-    public function getProblemas(): array {
-        return $this->problemas;
     }
 
 
@@ -58,6 +52,10 @@ class Venda implements JsonSerializable {
             $this->problemas[] = "Fornecer a forma de pagamento é obrigatório.";
     }
 
+
+    public function toArray(): array {
+        return get_object_vars( $this );
+    }
 
     public function jsonSerialize(): array {  
         return [

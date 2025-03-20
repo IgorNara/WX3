@@ -2,18 +2,12 @@
 declare(strict_types = 1);
 
 
-class Tamanho implements JsonSerializable {
-    private array $problemas = [];
+class Tamanho extends Validavel implements JsonSerializable {
 
     public function __construct(
         public int $id = 0,
         public ?CampoUnicoTamanho $sigla = null
     ){}
-
-
-    public function getProblemas(): array {
-        return $this->problemas;
-    }
 
 
     public function validar(): void {

@@ -3,12 +3,26 @@ declare( strict_types=1 );
 
 
 class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersistivel {
+    /** @inheritDoc */
+    public function obterTodos(): array {
+        $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
+                       c.id AS idCategoria, c.nome AS nomeCategoria, c.descricao AS descricaoCategoria
+                FROM produto p JOIN categoria c ON ( p.idCategoria = c.id )"; 
+
+        $produtos = $this->carregarObjetosDaClasse( $sql, Produto::class, [], "Erro ao carregar produtos." );
+        foreach ($produtos as $produto) {
+            $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
+            $produto->categoria = $categoria;
+        }
+        return $produtos;
+    }
+
 
     /** @inheritDoc */
     public function inserir( Produto $produto ): int {
         $sql = "INSERT INTO produto ( idCategoria, nome, arrayCores, arrayUrlImg, preco, descricao, dataCadastro, peso ) 
                        VALUES ( :categoria, :nome, :cores, :urls, :preco, :descricao, :dataCadastro, :peso )";
-        $arrayProduto = $produto->jsonSerialize();
+        $arrayProduto = $produto->toArray();
         unset( $arrayProduto["id"] );
         $arrayProduto["categoria"] = $arrayProduto["categoria"]->id;
         // $arrayProduto["urls"] = array_map( fn( $img ) => salvarImg( $img, "../api/imagens/produtos/" ), $arrayProduto["urls"] );
@@ -23,7 +37,7 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
     public function alterar( Produto $produto ): int {
         $sql = "UPDATE produto SET idCategoria = :categoria, nome = :nome, arrayCores = :cores, arrayUrlImg = :urls, 
                        preco = :preco, descricao = :descricao, dataCadastro = :dataCadastro, peso = :peso WHERE id = :id";
-        $arrayProduto = $produto->jsonSerialize();
+        $arrayProduto = $produto->toArray();
         $arrayProduto["categoria"] = $arrayProduto["categoria"]->id;
         // $arrayProduto["urls"] = array_map( fn( $img ) => salvarImg( $img, "../api/imagens/produtos/" ), $arrayProduto["urls"] );
         $arrayProduto["urls"] = json_encode( $arrayProduto["urls"], JSON_UNESCAPED_SLASHES );
@@ -35,7 +49,7 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
 
     /** @inheritDoc */
     public function excluirPeloId( int $id ): bool {
-        $arrayProduto = ( $this->obterPeloId( $id ) )->jsonSerialize();
+        $arrayProduto = ( $this->obterPeloId( $id ) )->toArray();
         array_map( fn( $url ) => excluirImg( $url ), $arrayProduto["urls"] );
         return $this->removerRegistroComId( $id, "produto", "Erro ao excluir produto." );
     }
@@ -63,12 +77,7 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
     }
 
 
-    /**
-     * Retorna uma lista de produtos ordenada em ordem decrescente com base no seu total de vendas
-     * 
-     * @return array<Produto>
-     * @throws RuntimeException
-     */
+    /** @inheritDoc */
     public function rankProdutosMaisVendidos(): array {
         $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
                        c.id AS idCategoria, c.nome AS nomeCategoria, c.descricao AS descricaoCategoria

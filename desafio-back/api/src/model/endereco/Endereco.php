@@ -2,8 +2,7 @@
 declare(strict_types = 1);
 
 
-class Endereco implements JsonSerializable {
-    private array $problemas = [];
+class Endereco extends Validavel implements JsonSerializable {
 
     public function __construct(
         public int $id = 0,
@@ -16,12 +15,7 @@ class Endereco implements JsonSerializable {
     ){
         $this->setCep( $cep );
     }
-
-
-    public function getProblemas(): array {
-        return $this->problemas;
-    }
-
+    
 
     public function setCep( $cep ): void {
         $this->cep = str_replace( "-", "", $cep );
@@ -52,6 +46,11 @@ class Endereco implements JsonSerializable {
         // Complemento
         if( $this->complemento && strlen( $this->logradouro ) > 60 )
             $this->problemas[] = "O complemento deve ter no máximo 60 caracteres.";
+    }
+
+
+    public function toArray(): array {
+        return get_object_vars( $this );
     }
 
 

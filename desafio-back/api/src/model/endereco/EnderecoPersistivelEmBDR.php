@@ -14,7 +14,7 @@ class EnderecoPersistivelEmBDR extends PersistivelEmBDR implements EnderecoPersi
     /** @inheritDoc */
     public function inserir( Endereco $endereco ): int {
         $sql = "INSERT INTO endereco ( logradouro, cidade, bairro, numero, cep, complemento ) VALUES ( :logradouro, :cidade, :bairro, :numero, :cep, :complemento )";
-        $arrayEndereco = $endereco->jsonSerialize();
+        $arrayEndereco = $endereco->toArray();
         unset( $arrayEndereco["id"] );
         $this->executar( $sql, $arrayEndereco,"Erro ao inserir endereço." );
         return $this->ultimoIdGerado();
@@ -24,7 +24,7 @@ class EnderecoPersistivelEmBDR extends PersistivelEmBDR implements EnderecoPersi
     /** @inheritDoc */
     public function alterar( Endereco $endereco ): int {
         $sql = "UPDATE endereco SET logradouro = :logradouro, cidade = :cidade, bairro = :bairro, numero = :numero, cep = :cep, complemento = :complemento WHERE id = :id";
-        $ps = $this->executar( $sql, $endereco->jsonSerialize(), "Erro ao alterar endereço." );
+        $ps = $this->executar( $sql, $endereco->toArray(), "Erro ao alterar endereço." );
         return $ps->rowCount();
     }
 

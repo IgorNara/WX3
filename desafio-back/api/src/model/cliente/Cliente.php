@@ -2,8 +2,7 @@
 declare(strict_types = 1);
 
 
-class Cliente implements JsonSerializable {
-    private array $problemas = [];
+class Cliente extends Validavel implements JsonSerializable {
 
     public function __construct(
         public int $id = 0,
@@ -15,12 +14,7 @@ class Cliente implements JsonSerializable {
         $this->setCpf( $cpf );
         $this->setDataNascimento( $dataNascimento );
     }
-
-
-    public function getProblemas(): array {
-        return $this->problemas;
-    }
-
+    
 
     public function setCpf( $cpf ): void {
         $cpfSemPonto = str_replace( ".", "", $cpf );
@@ -72,6 +66,12 @@ class Cliente implements JsonSerializable {
                 $this->problemas[] = "Só é permitido maiores de 18 anos.";
         }
     }
+
+
+    public function toArray(): array {
+        return get_object_vars( $this );
+    }
+
 
     public function jsonSerialize(): array {
         return [

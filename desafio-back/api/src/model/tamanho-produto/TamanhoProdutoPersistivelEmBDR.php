@@ -29,7 +29,7 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
     /** @inheritDoc */
     public function inserir( TamanhoProduto $tamanhoProduto ): void {
         $sql = "INSERT INTO tamanho_produto ( idProduto, idTamanho, qtd ) VALUES ( :produto, :tamanho, :qtd )";
-        $arrayTamanhoProduto = $tamanhoProduto->jsonSerialize();
+        $arrayTamanhoProduto = $tamanhoProduto->toArray();
         $arrayTamanhoProduto["produto"] = $arrayTamanhoProduto["produto"]->id;
         $arrayTamanhoProduto["tamanho"] = $arrayTamanhoProduto["tamanho"]->id;
         $this->executar( $sql, $arrayTamanhoProduto, "Erro ao inserir tamanho do produto." );
@@ -39,7 +39,7 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
     /** @inheritDoc */
     public function alterar( TamanhoProduto $tamanhoProduto ): int {
         $sql = "UPDATE tamanho_produto SET qtd = :qtd WHERE idProduto = :produto AND idTamanho = :tamanho";
-        $arrayTamanhoProduto = $tamanhoProduto->jsonSerialize();
+        $arrayTamanhoProduto = $tamanhoProduto->toArray();
         $arrayTamanhoProduto["produto"] = $arrayTamanhoProduto["produto"]->id;
         $arrayTamanhoProduto["tamanho"] = $arrayTamanhoProduto["tamanho"]->id;
         $ps = $this->executar( $sql, $arrayTamanhoProduto, "Erro ao alterar tamanho do produto." );
@@ -48,7 +48,7 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
 
     
     /** @inheritDoc */
-    public function obterPeloId( int $idProduto ): array {
+    public function obterPeloIdProduto( int $idProduto ): array {
         $sql = "SELECT tp.*, 
                        p.idCategoria, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
                        c.nome AS categoria, c.descricao AS descricaoCategoria,
