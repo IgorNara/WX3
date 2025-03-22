@@ -12,6 +12,7 @@
                 "src/model",
                 "src/model/categoria",
                 "src/model/cliente",
+                "src/model/cliente-endereco",
                 "src/model/endereco",
                 "src/model/produto",
                 "src/model/tamanho",

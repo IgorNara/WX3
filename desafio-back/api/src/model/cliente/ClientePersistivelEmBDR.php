@@ -7,11 +7,7 @@ class ClientePersistivelEmBDR extends PersistivelEmBDR implements ClientePersist
     /** @inheritDoc */
     public function obterTodos(): array {
         $sql = "SELECT * FROM cliente";
-        $clientes = $this->carregarObjetosDaClasse( $sql, Cliente::class, [], "Erro ao listar clientes." );
-        foreach( $clientes as $cliente ) {  
-            $cliente->enderecos = json_decode( $cliente->stringEnderecos, true ); 
-        }   
-        return $clientes;
+        return $this->carregarObjetosDaClasse( $sql, Cliente::class, [], "Erro ao listar clientes." ); 
     }
 
 
@@ -27,12 +23,12 @@ class ClientePersistivelEmBDR extends PersistivelEmBDR implements ClientePersist
 
 
     /** @inheritDoc */
-    public function alterar( Cliente $cliente ): int {
+    public function alterar( Cliente $cliente ): bool {
         $sql = "UPDATE cliente SET nomeCompleto = :nomeCompleto WHERE id = :id";
         $arrayCliente = $cliente->toArray();
         unset( $arrayCliente["cpf"], $arrayCliente["dataNascimento"], $arrayCliente["senha"], $arrayCliente["enderecos"] );
         $ps = $this->executar( $sql, $arrayCliente, "Erro ao alterar cliente." );
-        return $ps->rowCount();
+        return $ps->rowCount() > 0;
     }
 
 
@@ -41,33 +37,11 @@ class ClientePersistivelEmBDR extends PersistivelEmBDR implements ClientePersist
         return $this->removerRegistroComId( $id, "cliente", "Erro ao remover cliente." );
     }
 
-    // "SELECT c.id, c.nomeCompleto, c.cpf, c.dataNascimento,
-    //                    CONCAT( 
-    //                        '[',
-    //                        GROUP_CONCAT( 
-    //                           JSON_OBJECT( 
-    //                              'id', e.id,
-    //                              'logradouro', e.logradouro,
-    //                              'cidade', e.cidade,
-    //                              'bairro', e.bairro,
-    //                              'numero', e.numero,
-    //                              'cep', e.cep,
-    //                              'complemento', e.complemento
-    //                           )
-    //                        ),
-    //                        ']' 
-    //                     )AS stringEnderecos
-    //                    FROM cliente_endereco ce
-    //                    JOIN cliente c ON ( ce.idCliente = c.id ) 
-    //                    JOIN endereco e ON ( ce.idEndereco = e.id ) 
-    //                    WHERE c.id = ?";
     
     /** @inheritDoc */
-    public function obterPeloId( int $id ): Cliente {
+    public function obterPeloId( int $id ): ?Cliente {
         $sql = "SELECT * FROM cliente WHERE id = ?";
-        $cliente = $this->primeiroObjetoDaClasse( $sql, Cliente::class, [ $id ], "Erro ao buscar cliente." );
-        $cliente->enderecos = json_decode( $cliente->stringEnderecos, true ) ;
-        return $cliente;
+        return $this->primeiroObjetoDaClasse( $sql, Cliente::class, [ $id ], "Erro ao buscar cliente." );
     }
 
 
@@ -91,11 +65,10 @@ class ClientePersistivelEmBDR extends PersistivelEmBDR implements ClientePersist
 
         if( session_status() === PHP_SESSION_NONE ) {
             session_start();
-            $_SESSION["id"] = $cliente->id;
-            $_SESSION["usuario"] = $cliente->nomeCompleto;
-            $_SESSION["ultima_atividade"] = time();
-        }
-        
+            $_SESSION["user_id"] = $clienteBd->id;
+            $_SESSION["user_name"] = $clienteBd->nomeCompleto;
+            $_SESSION["last_activity"] = time();
+        }        
     }
 }
 ?>

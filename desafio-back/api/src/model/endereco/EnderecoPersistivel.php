@@ -33,19 +33,19 @@ interface EnderecoPersistivel {
      * Obtem um endereço pelo id.
      *
      * @param int $id
-     * @return Endereco
+     * @return ?Endereco
      * @throws RuntimeException
      */
-    public function obterPeloId( int $id ): Endereco;
+    public function obterPeloId( int $id ): ?Endereco;
 
     /**
      * Atualiza um endereço.
      *
      * @param Endereco $endereco
-     * @return int linhas afetadas
+     * @return bool indicando se encontrou para edição
      * @throws RuntimeException
      */
-    public function alterar( Endereco $endereco ): int;
+    public function alterar( Endereco $endereco ): bool;
 
     /**
      * Verifica a existência de um endereço pelo id.

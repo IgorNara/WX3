@@ -42,10 +42,10 @@ interface CategoriaPersistivel {
      * Obtem uma categoria pelo id.
      *
      * @param int $id
-     * @return Categoria
+     * @return ?Categoria
      * @throws RuntimeException
      */
-    public function obterPeloId( int $id ): Categoria;
+    public function obterPeloId( int $id ): ?Categoria;
 
     /**
      * Verifica a existência de uma categoria pelo id.

@@ -19,7 +19,7 @@ class VendaPersistivelEmBDR extends PersistivelEmBDR implements VendaPersistivel
 
 
     /** @inheritDoc */
-    public function obterPeloId( int $id ): Venda {
+    public function obterPeloId( int $id ): ?Venda {
         $sql = "SELECT v.id, v.idCliente, v.idEndereco, v.valorTotal, v.valorFrete, v.percentualDesconto, v.formaPagamento AS stringFormaPagamento,
                        c.nomeCompleto, c.cpf, c.dataNascimento,
                        e.logradouro, e.cidade, e.bairro, e.numero, e.cep, e.complemento

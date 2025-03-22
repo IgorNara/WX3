@@ -33,19 +33,19 @@ interface ProdutoPersistivel {
      * Obtem um produto pelo id.
      *
      * @param int $id
-     * @return Produto
+     * @return ?Produto
      * @throws RuntimeException
      */
-    public function obterPeloId( int $id ): Produto;
+    public function obterPeloId( int $id ): ?Produto;
 
     /**
      * Atualiza um produto.
      *
      * @param Produto $produto
-     * @return int linhas afetadas
+     * @return bool indicando se encontrou para edição
      * @throws RuntimeException
      */
-    public function alterar( Produto $produto ): int;
+    public function alterar( Produto $produto ): bool;
 
     /**
      * Verifica a existência de um produto pelo id.

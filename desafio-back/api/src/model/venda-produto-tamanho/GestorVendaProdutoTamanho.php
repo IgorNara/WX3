@@ -6,7 +6,7 @@ class GestorVendaProdutoTamanho {
     private VendaProdutoTamanhoPersistivel $persistivel;
     private Controller $controller;
 
-    public function __construct( $conexao ){
+    public function __construct( PDO $conexao ){
         $this->persistivel = new VendaProdutoTamanhoPersistivelEmBDR( $conexao );
         $this->controller = new Controller( $this->persistivel );
     }
@@ -17,8 +17,8 @@ class GestorVendaProdutoTamanho {
     }
 
 
-    public function vendaComId( int $id ): Venda {
-        return $this->controller->get( $id ); 
+    public function vendaComId( int $id ): array {
+        return $this->controller->get( $id, "Erro ao buscar informações da Venda" ); 
     }
 
 

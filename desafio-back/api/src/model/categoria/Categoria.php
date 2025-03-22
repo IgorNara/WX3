@@ -21,7 +21,9 @@ class Categoria extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        return get_object_vars( $this );
+        $array = get_object_vars( $this );
+        unset( $array["problemas"] );
+        return $array;
     }
 
 

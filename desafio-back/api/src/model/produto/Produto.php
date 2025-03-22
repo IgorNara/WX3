@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 
 class Produto extends Validavel implements JsonSerializable {
-
     public function __construct(
         public int $id = 0,
         public ?Categoria $categoria = null,
@@ -56,7 +55,9 @@ class Produto extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        return get_object_vars( $this );
+        $array = get_object_vars( $this );
+        unset( $array["problemas"] );
+        return $array;
     }
 
 

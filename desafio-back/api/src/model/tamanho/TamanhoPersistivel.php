@@ -15,10 +15,10 @@ interface TamanhoPersistivel {
      * Obtem um tamanho pelo id.
      *
      * @param int $id
-     * @return Tamanho
+     * @return ?Tamanho
      * @throws RuntimeException
      */
-    public function obterPeloId( int $id ): Tamanho;
+    public function obterPeloId( int $id ): ?Tamanho;
 
     /**
      * Verifica a existência de um tamanho pelo id.

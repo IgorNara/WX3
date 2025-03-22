@@ -61,6 +61,8 @@ function obterLogica(): string {
         for( $i = 2; $i < count( $arrayRota ); $i++ ) {
             if( ! is_numeric( $arrayRota[$i] ) )
                 $logica .= "/".$arrayRota[$i];
+            else
+                $logica .= "/:id";
         }
     }
 

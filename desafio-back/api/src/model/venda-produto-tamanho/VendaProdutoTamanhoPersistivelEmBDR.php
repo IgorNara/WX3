@@ -24,14 +24,13 @@ class VendaProdutoTamanhoPersistivelEmBDR extends PersistivelEmBDR implements Ve
         foreach( $vendasProdutosTamanhos as $vpt ) {
             $cliente = new Cliente( $vpt->idCliente, $vpt->nomeCompleto, $vpt->cpf, $vpt->dataNascimento );
             $endereco = new Endereco( $vpt->idEndereco, $vpt->logradouro, $vpt->cidade, $vpt->bairro, $vpt->cep, $vpt->numero, $vpt->complemento );
-            $venda = new Venda( $vpt->idVenda, $cliente, $endereco, FormaPagamento::from( $vpt->formaPagamento ), (float) $vpt->valorTotal );
+            $venda = new Venda( $vpt->idVenda, $cliente, $endereco, FormaPagamento::from( $vpt->formaPagamento ), (float) $vpt->valorTotal, $vpt->percentualDesconto );
             $categoria = new Categoria( $vpt->idCategoria, $vpt->nomeCategoria, $vpt->descricaoCategoria );
             $produto = new Produto( $vpt->idProduto, $categoria, $vpt->nomeProduto, json_decode( $vpt->arrayCores ), json_decode( $vpt->arrayUrlImg ), (float) $vpt->preco, $vpt->descricaoProduto, $vpt->dataCadastro, (float) $vpt->peso );
             $tamanho = new Tamanho( $vpt->idTamanho, CampoUnicoTamanho::from( $vpt->sigla ) );
             $vpt->venda = $venda;
             $vpt->produto = $produto;
             $vpt->tamanho = $tamanho;
-            $vpt->setPrecoVenda();
         }
         return $vendasProdutosTamanhos;
     }
@@ -71,14 +70,13 @@ class VendaProdutoTamanhoPersistivelEmBDR extends PersistivelEmBDR implements Ve
         foreach( $tamanhosProdutosVenda as $vpt ) {
             $cliente = new Cliente( $vpt->idCliente, $vpt->nomeCompleto, $vpt->cpf, $vpt->dataNascimento );
             $endereco = new Endereco( $vpt->idEndereco, $vpt->logradouro, $vpt->cidade, $vpt->bairro, $vpt->cep, $vpt->numero, $vpt->complemento );
-            $venda = new Venda( $vpt->idVenda, $cliente, $endereco, FormaPagamento::from( $vpt->formaPagamento ), (float) $vpt->valorTotal );
+            $venda = new Venda( $vpt->idVenda, $cliente, $endereco, FormaPagamento::from( $vpt->formaPagamento ), (float) $vpt->valorTotal, $vpt->percentualDesconto );
             $categoria = new Categoria( $vpt->idCategoria, $vpt->nomeCategoria, $vpt->descricaoCategoria );
             $produto = new Produto( $vpt->idProduto, $categoria, $vpt->nomeProduto, json_decode( $vpt->arrayCores ), json_decode( $vpt->arrayUrlImg ), (float) $vpt->preco, $vpt->descricaoProduto, $vpt->dataCadastro, (float) $vpt->peso );
             $tamanho = new Tamanho( $vpt->idTamanho, CampoUnicoTamanho::from( $vpt->sigla ) );
             $vpt->venda = $venda;
             $vpt->produto = $produto;
             $vpt->tamanho = $tamanho;
-            $vpt->setPrecoVenda();
         }
 
         return $tamanhosProdutosVenda;

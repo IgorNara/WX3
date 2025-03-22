@@ -1,33 +1,39 @@
 <?php
 declare(strict_types = 1);
 
-$gestor = new GestorEndereco( $conexao );
+$gestorEndereco = new GestorEndereco( $conexao );
+$gestorClienteEndereco = new GestorClienteEndereco( $conexao );
+$gestorTransacao = new GestorTransacao( $conexao );
 
 return [
     "/endereco" => [
-        "GET" => function () use ( $gestor ) {
+        "GET" => function () use ( $gestorEndereco ) {
             try {
-                $enderecos = $gestor->enderecos();
+                $enderecos = $gestorEndereco->enderecos();
                 respostaJson( false, "Endereços listados com sucesso!", 200, $enderecos );
             } catch ( RuntimeException $erro ) {
                 respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
             }
         },
 
-        "POST" => function ( $dados ) use ( $gestor, $persistivel ) {
+        "POST" => function ( $dados ) use ( $gestorClienteEndereco, $gestorEndereco, $gestorTransacao ) {
             try {
-                $idGerado = $gestor->cadastrar( $dados );
-                respostaJson( false, "Endereço inserido com sucesso! O id gerado foi {$idGerado}", 201 );
+                $gestorTransacao->iniciar();
+                $idGeradoEndereco = $gestorClienteEndereco->cadastrar( $dados, $gestorEndereco );
+                $gestorTransacao->confirmar();
+                respostaJson( false, "Endereço inserido com sucesso! O id gerado foi {$idGeradoEndereco}", 201 );
             } catch ( EntradaInvalidaException $erro ) {
+                $gestorTransacao->reverter();
                 respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro->getProblems() );
             } catch ( RuntimeException $erro ) {
+                $gestorTransacao->reverter();
                 respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
             }
         },
 
-        "PUT" => function ( $dados ) use ( $gestor ) {
+        "PUT" => function ( $dados ) use ( $gestorEndereco ) {
             try {
-                $gestor->alterar( $dados );
+                $gestorEndereco->alterar( $dados );
                 respostaJson( false, "Endereço atualizado com sucesso!", 200 );
             } catch ( EntradaInvalidaException $erro ) {
                 respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro->getProblems() );
@@ -38,18 +44,18 @@ return [
     ],
 
     "/endereco/:id" => [
-        "GET" => function ( $parametros ) use ( $gestor ) {
+        "GET" => function ( $parametros ) use ( $gestorEndereco ) {
             try {
-                $endereco = $gestor->enderecoComId( (int) $parametros[0] );
+                $endereco = $gestorEndereco->enderecoComId( (int) $parametros[0] );
                 respostaJson( false, "Endereço listado com sucesso!", 200, $endereco );
             } catch ( RuntimeException $erro ) {
                 respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );
             }
         },  
 
-        "DELETE" => function ( $parametros ) use ( $gestor ) {
+        "DELETE" => function ( $parametros ) use ( $gestorEndereco ) {
             try {
-                $gestor->removerComId( (int) $parametros[0] );
+                $gestorEndereco->removerComId( (int) $parametros[0] );
                 respostaJson( false, "Endereço excluído com sucesso!", 204 );
             } catch ( RuntimeException $erro ) {
                 respostaJson( true, $erro->getMessage(), $erro->getCode(), $erro );

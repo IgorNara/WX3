@@ -27,6 +27,17 @@ CREATE TABLE IF NOT EXISTS cliente(
 INSERT INTO cliente ( nomeCompleto, cpf, dataNascimento, senha ) VALUES ( "Igor Vieira Nara", "14954793742", "2006-02-13", "Teste1!" );
 
 
+CREATE TABLE IF NOT EXISTS cliente_endereco (
+    idCliente INT NOT NULL,
+    idEndereco INT NOT NULL,
+
+    PRIMARY KEY ( idCliente, idEndereco ),
+    CONSTRAINT fk_cliente_endereco__cliente_id FOREIGN KEY ( idCliente ) REFERENCES cliente ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_cliente_endereco__endereco_id FOREIGN KEY ( idEndereco ) REFERENCES endereco ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=INNODB;
+INSERT INTO cliente_endereco ( idCliente, idEndereco ) VALUES ( 1, 1 );
+
+
 CREATE TABLE IF NOT EXISTS categoria(
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(30) NOT NULL, 

@@ -13,12 +13,13 @@ class ComposerStaticInit7b6ac02b3fad6638879df856320de8de
         3 => __DIR__ . '/../..' . '/src/model',
         4 => __DIR__ . '/../..' . '/src/model/categoria',
         5 => __DIR__ . '/../..' . '/src/model/cliente',
-        6 => __DIR__ . '/../..' . '/src/model/endereco',
-        7 => __DIR__ . '/../..' . '/src/model/produto',
-        8 => __DIR__ . '/../..' . '/src/model/tamanho',
-        9 => __DIR__ . '/../..' . '/src/model/tamanho-produto',
-        10 => __DIR__ . '/../..' . '/src/model/venda',
-        11 => __DIR__ . '/../..' . '/src/model/venda-produto-tamanho',
+        6 => __DIR__ . '/../..' . '/src/model/cliente-endereco',
+        7 => __DIR__ . '/../..' . '/src/model/endereco',
+        8 => __DIR__ . '/../..' . '/src/model/produto',
+        9 => __DIR__ . '/../..' . '/src/model/tamanho',
+        10 => __DIR__ . '/../..' . '/src/model/tamanho-produto',
+        11 => __DIR__ . '/../..' . '/src/model/venda',
+        12 => __DIR__ . '/../..' . '/src/model/venda-produto-tamanho',
     );
 
     public static $classMap = array (

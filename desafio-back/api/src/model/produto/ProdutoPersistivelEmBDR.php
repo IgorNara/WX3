@@ -13,6 +13,8 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
         foreach ($produtos as $produto) {
             $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
             $produto->categoria = $categoria;
+            $produto->urls = json_decode( $produto->arrayUrlImg );
+            $produto->cores = json_decode( $produto->arrayCores );
         }
         return $produtos;
     }
@@ -34,7 +36,7 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
 
 
     /** @inheritDoc */
-    public function alterar( Produto $produto ): int {
+    public function alterar( Produto $produto ): bool {
         $sql = "UPDATE produto SET idCategoria = :categoria, nome = :nome, arrayCores = :cores, arrayUrlImg = :urls, 
                        preco = :preco, descricao = :descricao, dataCadastro = :dataCadastro, peso = :peso WHERE id = :id";
         $arrayProduto = $produto->toArray();
@@ -43,20 +45,22 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
         $arrayProduto["urls"] = json_encode( $arrayProduto["urls"], JSON_UNESCAPED_SLASHES );
         $arrayProduto["cores"] = json_encode( $arrayProduto["cores"] );
         $ps = $this->executar( $sql, $arrayProduto, "Erro ao alterar produto." );
-        return $ps->rowCount();
+        return $ps->rowCount() > 0;
     }
 
 
     /** @inheritDoc */
     public function excluirPeloId( int $id ): bool {
-        $arrayProduto = ( $this->obterPeloId( $id ) )->toArray();
-        array_map( fn( $url ) => excluirImg( $url ), $arrayProduto["urls"] );
+        if( $this->existeComId( $id ) ) {
+            $arrayProduto = ( $this->obterPeloId( $id ) )->toArray();
+            array_map( fn( $url ) => excluirImg( $url ), $arrayProduto["urls"] );
+        }   
         return $this->removerRegistroComId( $id, "produto", "Erro ao excluir produto." );
     }
 
 
     /** @inheritDoc */
-    public function obterPeloId( int $id ): Produto {
+    public function obterPeloId( int $id ): ?Produto {
         $sql = "SELECT p.id, p.nome, p.arrayCores, p.arrayUrlImg, p.preco, p.descricao, p.dataCadastro, p.peso,
                        c.id AS idCategoria, c.nome AS nomeCategoria, c.descricao AS descricaoCategoria
                 FROM produto p
@@ -65,6 +69,8 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
         $produto = $this->primeiroObjetoDaClasse( $sql, Produto::class, [ $id ], "Erro ao carregar produto." );
         $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
         $produto->categoria = $categoria;
+        $produto->urls = json_decode( $produto->arrayUrlImg );
+        $produto->cores = json_decode( $produto->arrayCores );
         return $produto;
     }
 
@@ -90,6 +96,8 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
         foreach ($produtos as $produto) {
             $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
             $produto->categoria = $categoria;
+            $produto->urls = json_decode( $produto->arrayUrlImg );
+            $produto->cores = json_decode( $produto->arrayCores );
         }
         return $produtos;
     }

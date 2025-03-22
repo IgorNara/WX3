@@ -22,10 +22,10 @@ class EnderecoPersistivelEmBDR extends PersistivelEmBDR implements EnderecoPersi
 
 
     /** @inheritDoc */
-    public function alterar( Endereco $endereco ): int {
+    public function alterar( Endereco $endereco ): bool {
         $sql = "UPDATE endereco SET logradouro = :logradouro, cidade = :cidade, bairro = :bairro, numero = :numero, cep = :cep, complemento = :complemento WHERE id = :id";
         $ps = $this->executar( $sql, $endereco->toArray(), "Erro ao alterar endereço." );
-        return $ps->rowCount();
+        return $ps->rowCount() > 0;
     }
 
 
@@ -36,7 +36,7 @@ class EnderecoPersistivelEmBDR extends PersistivelEmBDR implements EnderecoPersi
 
 
     /** @inheritDoc */
-    public function obterPeloId( int $id ): Endereco {
+    public function obterPeloId( int $id ): ?Endereco {
         $sql = "SELECT * FROM endereco WHERE id = ?";
         return $this->primeiroObjetoDaClasse( $sql, Endereco::class, [ $id ], "Erro ao buscar endereço." );
     }

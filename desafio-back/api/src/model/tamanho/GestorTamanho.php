@@ -6,7 +6,7 @@ class GestorTamanho {
     private TamanhoPersistivel $persistivel;
     private Controller $controller;
 
-    public function __construct( $conexao ){
+    public function __construct( PDO $conexao ){
         $this->persistivel = new TamanhoPersistivelEmBDR( $conexao );
         $this->controller = new Controller( $this->persistivel );
     }
@@ -18,7 +18,7 @@ class GestorTamanho {
 
 
     public function tamanhoComId( int $id ): Tamanho {
-        return $this->controller->get( $id );
+        return $this->controller->get( $id, "Erro ao buscar Tamanho" );
     }
 } 
 

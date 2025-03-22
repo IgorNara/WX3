@@ -18,7 +18,7 @@ class PersistivelEmBDR {
             return $ps->fetchAll();
         }
         catch ( PDOException $erro ) {
-            throw new RuntimeException( $msgExcecao ?? $erro->getMessage(), intval( $erro->getCode() ), $erro );
+            throw new RuntimeException( $msgExcecao ?? $erro->getMessage(), 500, $erro );
         }
     }
     
@@ -36,7 +36,7 @@ class PersistivelEmBDR {
             return $ps->rowCount() > 0;
         }
         catch ( PDOException $erro ) {
-            throw new RuntimeException( $msgExcecao ?? $erro->getMessage(), intval( $erro->getCode() ), $erro );
+            throw new RuntimeException( $msgExcecao ?? $erro->getMessage(), 500, $erro );
         }
     }
 
@@ -48,7 +48,7 @@ class PersistivelEmBDR {
             return $ps;
         }
         catch ( PDOException $erro ) {
-            throw new RuntimeException( $msgExcecao ?? $erro->getMessage(), intval( $erro->getCode() ), $erro );
+            throw new RuntimeException( $msgExcecao ?? $erro->getMessage(), 500, $erro );
         }
     }
 

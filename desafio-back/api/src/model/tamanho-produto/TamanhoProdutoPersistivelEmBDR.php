@@ -27,23 +27,24 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
 
 
     /** @inheritDoc */
-    public function inserir( TamanhoProduto $tamanhoProduto ): void {
+    public function inserir( TamanhoProduto $tamanhoProduto ): int {
         $sql = "INSERT INTO tamanho_produto ( idProduto, idTamanho, qtd ) VALUES ( :produto, :tamanho, :qtd )";
         $arrayTamanhoProduto = $tamanhoProduto->toArray();
         $arrayTamanhoProduto["produto"] = $arrayTamanhoProduto["produto"]->id;
         $arrayTamanhoProduto["tamanho"] = $arrayTamanhoProduto["tamanho"]->id;
         $this->executar( $sql, $arrayTamanhoProduto, "Erro ao inserir tamanho do produto." );
+        return 1;
     }
 
 
     /** @inheritDoc */
-    public function alterar( TamanhoProduto $tamanhoProduto ): int {
+    public function alterar( TamanhoProduto $tamanhoProduto ): bool {
         $sql = "UPDATE tamanho_produto SET qtd = :qtd WHERE idProduto = :produto AND idTamanho = :tamanho";
         $arrayTamanhoProduto = $tamanhoProduto->toArray();
         $arrayTamanhoProduto["produto"] = $arrayTamanhoProduto["produto"]->id;
         $arrayTamanhoProduto["tamanho"] = $arrayTamanhoProduto["tamanho"]->id;
         $ps = $this->executar( $sql, $arrayTamanhoProduto, "Erro ao alterar tamanho do produto." );
-        return $ps->rowCount();
+        return $ps->rowCount() > 0;
     }
 
     

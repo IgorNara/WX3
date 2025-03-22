@@ -33,19 +33,19 @@ interface ClientePersistivel {
      * Obtem um cliente pelo id.
      *
      * @param int $id
-     * @return Cliente
+     * @return ?Cliente
      * @throws RuntimeException
      */
-    public function obterPeloId( int $id ): Cliente;
+    public function obterPeloId( int $id ): ?Cliente;
 
     /**
      * Atualiza um cliente.
      *
      * @param Cliente $cliente
-     * @return int linhas afetadas
+     * @return bool indicando se foi encontrado para edição
      * @throws RuntimeException
      */
-    public function alterar( Cliente $cliente ): int;
+    public function alterar( Cliente $cliente ): bool;
 
     /**
      * Verifica a existência de um cliente pelo id.

@@ -6,7 +6,7 @@ class GestorCliente {
     private ClientePersistivel $persistivel;
     private Controller $controller;
 
-    public function __construct( $conexao ){
+    public function __construct( PDO $conexao ){
         $this->persistivel = new ClientePersistivelEmBDR( $conexao );
         $this->controller = new Controller( $this->persistivel );
     }
@@ -18,26 +18,26 @@ class GestorCliente {
 
 
     public function clienteComId( int $id ): Cliente {
-        return $this->controller->get( $id );
+        return $this->controller->get( $id, "Erro ao buscar Cliente" );
     }
 
 
     public function cadastrar( array $dados ): int {
         $cliente = new Cliente( 0, $dados["nomeCompleto"], $dados["cpf"], $dados["dataNascimento"], $dados["senha"] );
-        return $this->controller->post( $cliente );       
+        return $this->controller->post( $cliente, "Erro ao cadastrar Cliente" );       
     }
 
 
     public function alterar( array $dados ): void {
         $cliente = new Cliente( $dados["id"] ?? 0, $dados["nomeCompleto"], $dados["cpf"], $dados["dataNascimento"], $dados["senha"] );
-        if( ! $this->controller->put( $cliente ) ) {
-            throw new RuntimeException( "Cliente não encontrado para atualização.", 400 );
+        if( ! $this->controller->put( $cliente, "Erro ao alterar Cliente" ) ) {
+            throw new RuntimeException( "Erro ao alterar Cliente - Registro não encontrado", 400 );
         }   
     }
 
 
     public function removerComId( int $id ): void {
-        $this->controller->delete( $id );
+        $this->controller->delete( $id, "Erro ao remover Cliente" );
     }
 
 

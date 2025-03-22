@@ -36,7 +36,7 @@ class CategoriaPersistivelEmBDR extends PersistivelEmBDR implements CategoriaPer
 
 
     /** @inheritDoc */
-    public function obterPeloId( int $id ): Categoria {
+    public function obterPeloId( int $id ): ?Categoria {
         $sql = "SELECT * FROM categoria WHERE id = ?";
         return $this->primeiroObjetoDaClasse( $sql, Categoria::class, [ $id ], "Erro ao buscar categoria." );
     }

@@ -15,10 +15,10 @@ interface TamanhoProdutoPersistivel {
      * Adiciona um tamanho a um produto
      *
      * @param TamanhoProduto $tamanhoProduto
-     * @return void
+     * @return int
      * @throws RuntimeException
      */
-    public function inserir( TamanhoProduto $tamanhoProduto ): void;
+    public function inserir( TamanhoProduto $tamanhoProduto ): int;
 
     /**
      * Obtem os tamanhos de um produto
@@ -43,10 +43,10 @@ interface TamanhoProdutoPersistivel {
      * Atualiza a quantidade de um tamanho de produto
      *
      * @param TamanhoProduto $tamanhoProduto
-     * @return int linhas afetadas
+     * @return bool indicando se encontrou para edição
      * @throws RuntimeException
      */
-    public function alterar( TamanhoProduto $tamanhoProduto ): int;
+    public function alterar( TamanhoProduto $tamanhoProduto ): bool;
 
     /**
      * Verifica se existe algum tamanho registrado para o produto

@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 class Venda extends Validavel implements JsonSerializable {
     public float $valorFrete = 10.00;
-    public int $percentualDesconto = 0;
     
 
     public function __construct(
@@ -12,13 +11,16 @@ class Venda extends Validavel implements JsonSerializable {
         public ?Cliente $cliente = null,
         public ?Endereco $endereco = null,
         public ?FormaPagamento $formaPagamento = null,
-        public float $valorTotal = 0.0
+        public float $valorTotal = 0.0,
+        public int $percentualDesconto = 0
     ){}
 
 
     public function setPercentualDesconto():void {
         if( $this->formaPagamento->value === "Pix" )
             $this->percentualDesconto = 10;
+        else 
+            $this->percentualDesconto = 0;
     }
 
 
@@ -30,7 +32,7 @@ class Venda extends Validavel implements JsonSerializable {
                 $valorTotal += ( $produto->preco * $tamanho["qtd"] );
             }
         }
-        return $valorTotal;
+        return ($valorTotal - $valorTotal * ( $this->percentualDesconto/100 ));
     }
 
 
@@ -54,7 +56,9 @@ class Venda extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        return get_object_vars( $this );
+        $array = get_object_vars( $this );
+        unset( $array["problemas"] );
+        return $array;
     }
 
     public function jsonSerialize(): array {  

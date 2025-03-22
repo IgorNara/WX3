@@ -16,10 +16,10 @@ interface VendaPersistivel {
      * Obtem uma venda pelo id.
      *
      * @param int $id
-     * @return Venda
+     * @return ?Venda
      * @throws RuntimeException
      */
-    public function obterPeloId( int $id ): Venda;
+    public function obterPeloId( int $id ): ?Venda;
 
     /**
      * Verifica a existência de uma venda pelo id.
