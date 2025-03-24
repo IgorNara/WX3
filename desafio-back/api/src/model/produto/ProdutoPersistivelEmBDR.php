@@ -12,9 +12,9 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
         $produtos = $this->carregarObjetosDaClasse( $sql, Produto::class, [], "Erro ao carregar produtos." );
         foreach ($produtos as $produto) {
             $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
-            $produto->categoria = $categoria;
-            $produto->urls = json_decode( $produto->arrayUrlImg );
-            $produto->cores = json_decode( $produto->arrayCores );
+            $produto->setCategoria($categoria);
+            $produto->setUrls( json_decode( $produto->arrayUrlImg ) );
+            $produto->setCores( json_decode( $produto->arrayCores ) );
         }
         return $produtos;
     }
@@ -52,8 +52,8 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
     /** @inheritDoc */
     public function excluirPeloId( int $id ): bool {
         if( $this->existeComId( $id ) ) {
-            $arrayProduto = ( $this->obterPeloId( $id ) )->toArray();
-            array_map( fn( $url ) => excluirImg( $url ), $arrayProduto["urls"] );
+            $produto = $this->obterPeloId( $id );
+            array_map( fn( $url ) => excluirImg( $url ), $produto->urls );
         }   
         return $this->removerRegistroComId( $id, "produto", "Erro ao excluir produto." );
     }
@@ -68,9 +68,9 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
                 WHERE p.id = ?"; // LIMIT ?
         $produto = $this->primeiroObjetoDaClasse( $sql, Produto::class, [ $id ], "Erro ao carregar produto." );
         $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
-        $produto->categoria = $categoria;
-        $produto->urls = json_decode( $produto->arrayUrlImg );
-        $produto->cores = json_decode( $produto->arrayCores );
+        $produto->setCategoria( $categoria );
+        $produto->setUrls( json_decode( $produto->arrayUrlImg ) );
+        $produto->setCores( json_decode( $produto->arrayCores ) );
         return $produto;
     }
 
@@ -95,9 +95,9 @@ class ProdutoPersistivelEmBDR extends PersistivelEmBDR implements ProdutoPersist
         $produtos = $this->carregarObjetosDaClasse( $sql, Produto::class, [], "Erro ao carregar produtos." );
         foreach ($produtos as $produto) {
             $categoria = new Categoria( $produto->idCategoria, $produto->nomeCategoria, $produto->descricaoCategoria );
-            $produto->categoria = $categoria;
-            $produto->urls = json_decode( $produto->arrayUrlImg );
-            $produto->cores = json_decode( $produto->arrayCores );
+            $produto->setCategoria($categoria);
+            $produto->setUrls( json_decode( $produto->arrayUrlImg ) );
+            $produto->setCores( json_decode( $produto->arrayCores ) );
         }
         return $produtos;
     }

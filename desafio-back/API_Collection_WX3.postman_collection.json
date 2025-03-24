@@ -380,7 +380,21 @@
 					"name": "GET rank",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost/WX3/desafio-back/api/produto/rank",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"WX3",
+								"desafio-back",
+								"api",
+								"produto",
+								"rank"
+							]
+						}
 					},
 					"response": []
 				}
@@ -500,7 +514,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 2,\r\n    \"nomeCompleto\": \"Teste POST\",\r\n    \"cpf\": \"149.547.937-40\",\r\n    \"dataNascimento\": \"13/02/2006\",\r\n    \"senha\": \"TestePost1!\"\r\n}",
+							"raw": "{\r\n    \"id\": 2,\r\n    \"nomeCompleto\": \"Teste PUT\",\r\n    \"cpf\": \"149.547.937-40\",\r\n    \"dataNascimento\": \"13/02/2006\",\r\n    \"senha\": \"TestePost1!\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -623,7 +637,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"logradouro\": \"Teste POST\",\r\n    \"cidade\": \"Teste POST\",\r\n    \"bairro\": \"Teste POST\",\r\n    \"cep\": \"28500-000\",\r\n    \"numero\": 10,\r\n    \"complemento\": \"Teste POST\"\r\n}",
+							"raw": "{\r\n    \"idCliente\": 1,\r\n    \"logradouro\": \"Teste POST\",\r\n    \"cidade\": \"Teste POST\",\r\n    \"bairro\": \"Teste POST\",\r\n    \"cep\": \"28500-000\",\r\n    \"numero\": 10,\r\n    \"complemento\": \"Teste POST\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -4,17 +4,35 @@ declare(strict_types = 1);
 
 class Produto extends Validavel implements JsonSerializable {
     public function __construct(
-        public int $id = 0,
-        public ?Categoria $categoria = null,
-        public string $nome = "",
-        public array $cores = [],
-        public array $urls = [],
-        public float $preco = 0.0,
-        public string $descricao = "",
-        public string $dataCadastro = "",
-        public float $peso = 0.0
+        private int $id = 0,
+        private ?Categoria $categoria = null,
+        private string $nome = "",
+        private array $cores = [],
+        private array $urls = [],
+        private float $preco = 0.0,
+        private string $descricao = "",
+        private string $dataCadastro = "",
+        private float $peso = 0.0
     ){
       $this->setDataCadastro( $dataCadastro );
+    }
+
+    public function __get( string $atributo ): mixed {
+        return $this->$atributo ?? throw new RuntimeException( "Erro ao buscar atributo", 500 );
+    }
+
+    public function setCategoria( Categoria $categoria ): void {
+        $this->categoria = $categoria;
+    }
+
+
+    public function setUrls( array $urls ): void {
+        $this->urls = $urls;
+    }
+
+
+    public function setCores( array $cores ): void {
+        $this->cores = $cores;
     }
     
 
@@ -55,13 +73,6 @@ class Produto extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        $array = get_object_vars( $this );
-        unset( $array["problemas"] );
-        return $array;
-    }
-
-
-    public function jsonSerialize(): array {
         return [
             "id" => $this->id,
             "categoria" => $this->categoria,
@@ -73,6 +84,11 @@ class Produto extends Validavel implements JsonSerializable {
             "dataCadastro" => $this->dataCadastro,
             "peso" => $this->peso,
         ];
+    }
+
+
+    public function jsonSerialize(): array {
+        return $this->toArray();
     }
 }
 

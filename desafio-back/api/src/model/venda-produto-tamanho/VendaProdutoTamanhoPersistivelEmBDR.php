@@ -28,9 +28,9 @@ class VendaProdutoTamanhoPersistivelEmBDR extends PersistivelEmBDR implements Ve
             $categoria = new Categoria( $vpt->idCategoria, $vpt->nomeCategoria, $vpt->descricaoCategoria );
             $produto = new Produto( $vpt->idProduto, $categoria, $vpt->nomeProduto, json_decode( $vpt->arrayCores ), json_decode( $vpt->arrayUrlImg ), (float) $vpt->preco, $vpt->descricaoProduto, $vpt->dataCadastro, (float) $vpt->peso );
             $tamanho = new Tamanho( $vpt->idTamanho, CampoUnicoTamanho::from( $vpt->sigla ) );
-            $vpt->venda = $venda;
-            $vpt->produto = $produto;
-            $vpt->tamanho = $tamanho;
+            $vpt->setVenda( $venda );
+            $vpt->setProduto( $produto );
+            $vpt->setTamanho( $tamanho );
         }
         return $vendasProdutosTamanhos;
     }
@@ -74,9 +74,9 @@ class VendaProdutoTamanhoPersistivelEmBDR extends PersistivelEmBDR implements Ve
             $categoria = new Categoria( $vpt->idCategoria, $vpt->nomeCategoria, $vpt->descricaoCategoria );
             $produto = new Produto( $vpt->idProduto, $categoria, $vpt->nomeProduto, json_decode( $vpt->arrayCores ), json_decode( $vpt->arrayUrlImg ), (float) $vpt->preco, $vpt->descricaoProduto, $vpt->dataCadastro, (float) $vpt->peso );
             $tamanho = new Tamanho( $vpt->idTamanho, CampoUnicoTamanho::from( $vpt->sigla ) );
-            $vpt->venda = $venda;
-            $vpt->produto = $produto;
-            $vpt->tamanho = $tamanho;
+            $vpt->setVenda( $venda );
+            $vpt->setProduto( $produto );
+            $vpt->setTamanho( $tamanho );
         }
 
         return $tamanhosProdutosVenda;

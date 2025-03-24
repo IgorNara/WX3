@@ -16,7 +16,7 @@ class ClientePersistivelEmBDR extends PersistivelEmBDR implements ClientePersist
         $sql = "INSERT INTO cliente ( nomeCompleto, cpf, dataNascimento, senha ) VALUES ( :nomeCompleto, :cpf, :dataNascimento, :senha )";
         $arrayCliente = $cliente->toArray();
         $arrayCliente["senha"] = password_hash( $arrayCliente["senha"], PASSWORD_DEFAULT );
-        unset( $arrayCliente["id"], $arrayCliente["enderecos"] );
+        unset( $arrayCliente["id"] );
         $this->executar( $sql, $arrayCliente, "Erro ao inserir cliente." );
         return $this->ultimoIdGerado();
     }
@@ -26,7 +26,7 @@ class ClientePersistivelEmBDR extends PersistivelEmBDR implements ClientePersist
     public function alterar( Cliente $cliente ): bool {
         $sql = "UPDATE cliente SET nomeCompleto = :nomeCompleto WHERE id = :id";
         $arrayCliente = $cliente->toArray();
-        unset( $arrayCliente["cpf"], $arrayCliente["dataNascimento"], $arrayCliente["senha"], $arrayCliente["enderecos"] );
+        unset( $arrayCliente["cpf"], $arrayCliente["dataNascimento"], $arrayCliente["senha"] );
         $ps = $this->executar( $sql, $arrayCliente, "Erro ao alterar cliente." );
         return $ps->rowCount() > 0;
     }
@@ -55,7 +55,7 @@ class ClientePersistivelEmBDR extends PersistivelEmBDR implements ClientePersist
 
     public function logar( Cliente $cliente ): void {
         $sql = "SELECT * FROM cliente WHERE cpf = ?";
-
+        
         $clienteBd = $this->primeiroObjetoDaClasse( $sql, Cliente::class, [ $cliente->cpf ], "Erro ao fazer login." );
 
         if( ! $clienteBd || ! password_verify( $cliente->senha, $clienteBd->senha ) ) {

@@ -18,7 +18,7 @@ class GestorClienteEndereco {
 
 
     public function cadastrar( array $dados, GestorEndereco $gestorEndereco ): int {
-        $cliente = new Cliente( $dados["idCliente"] ); // $_SESSION["user_id"]
+        $cliente = new Cliente( $dados["idCliente"] ?? 0 ); // $_SESSION["user_id"]
         $idGeradoEndereco = $gestorEndereco->cadastrar( $dados );
         $clienteEndereco = new ClienteEndereco( $cliente, new Endereco( $idGeradoEndereco ) );
         $this->controller->post( $clienteEndereco, "Erro ao relacionar o Cliente com o Endereço" );

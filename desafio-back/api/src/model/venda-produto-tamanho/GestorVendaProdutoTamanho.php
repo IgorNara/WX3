@@ -22,13 +22,12 @@ class GestorVendaProdutoTamanho {
     }
 
 
-    public function cadastrar( array $dados, GestorEndereco $gestorEndereco, GestorTamanhoProduto $gestorTamanhoProduto, GestorVenda $gestorVenda, GestorProduto $gestorProduto ): int {
+    public function cadastrar( array $dados, GestorEndereco $gestorEndereco, GestorClienteEndereco $gestorClienteEndereco, GestorTamanhoProduto $gestorTamanhoProduto, GestorVenda $gestorVenda, GestorProduto $gestorProduto ): int {
         $dadosEndereco = $dados["endereco"];
-        $endereco = new Endereco( $dadosEndereco["id"] );
+        $endereco = new Endereco( $dadosEndereco["id"] ?? 0 );
         if( ! $endereco->id > 0 ) { // Insere um novo endereço
-            $endereco = new Endereco( 0, $dadosEndereco["logradouro"], $dadosEndereco["cidade"], $dadosEndereco["bairro"], $dadosEndereco["cep"], $dadosEndereco["numero"] ?? null, $dadosEndereco["complemento"] ?? null );
-            $dados["endereco"]["id"] = $gestorEndereco->cadastrar( $dadosEndereco );
-            // Inserir relação entre cliente e novo endereço
+            $dadosEndereco["idCliente"] = $dados["idCliente"] ?? 0;
+            $gestorClienteEndereco->cadastrar( $dadosEndereco, $gestorEndereco );
         }
 
         $dadosProdutos = $dados["produtos"];
@@ -39,22 +38,22 @@ class GestorVendaProdutoTamanho {
 
         foreach( $dadosProdutos as $dadosProduto ) {  
             // Busca as informações do produto comprado  
-            $produto = $gestorProduto->produtoComId( $dadosProduto["id"] );
+            $produto = $gestorProduto->produtoComId( $dadosProduto["id"] ?? 0 );
 
             // Cria uma relação entre venda, produto e tamanho para todos os tamanhos vendidos de cada produto
             $dadosTamanhos = $dadosProduto["tamanhos"];
             foreach( $dadosTamanhos as $dadosTamanho ) {
-                $tamanho = new Tamanho( $dadosTamanho["id"] );  
-                $precoVenda = ( $produto->preco * $dadosTamanho["qtd"] );
+                $tamanho = new Tamanho( $dadosTamanho["id"] ?? 0 );  
+                $precoVenda = ( $produto->preco * $dadosTamanho["qtd"] ?? 0 );
 
                 // Insere a relação
-                $vpt = new VendaProdutoTamanho( $venda, $produto, $tamanho, $dadosTamanho["qtd"], $precoVenda );
+                $vpt = new VendaProdutoTamanho( $venda, $produto, $tamanho, $dadosTamanho["qtd"] ?? 0, $precoVenda );
                 $this->controller->post( $vpt );
 
                 // Altera o estoque desse tamanho do produto
-                $tamanhoProduto = $gestorTamanhoProduto->tamanhoProdutoComId( (int) $produto->id, (int) $tamanho->id );
-                $tamanhoProduto->qtd -= $dadosTamanho["qtd"];
-                $gestorTamanhoProduto->alterar( $tamanhoProduto->toArray() );
+                $arrayTamanhoProduto = ($gestorTamanhoProduto->tamanhoProdutoComId( $produto->id, $tamanho->id ))->toArray();
+                $arrayTamanhoProduto["qtd"] -= $dadosTamanho["qtd"];
+                $gestorTamanhoProduto->alterar( $arrayTamanhoProduto );
             }    
         }
         return $venda->id;

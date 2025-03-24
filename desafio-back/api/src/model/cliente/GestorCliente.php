@@ -23,13 +23,13 @@ class GestorCliente {
 
 
     public function cadastrar( array $dados ): int {
-        $cliente = new Cliente( 0, $dados["nomeCompleto"], $dados["cpf"], $dados["dataNascimento"], $dados["senha"] );
+        $cliente = new Cliente( 0, $dados["nomeCompleto"] ?? "", $dados["cpf"] ?? "", $dados["dataNascimento"] ?? "", $dados["senha"] ?? "" );
         return $this->controller->post( $cliente, "Erro ao cadastrar Cliente" );       
     }
 
 
     public function alterar( array $dados ): void {
-        $cliente = new Cliente( $dados["id"] ?? 0, $dados["nomeCompleto"], $dados["cpf"], $dados["dataNascimento"], $dados["senha"] );
+        $cliente = new Cliente( $dados["id"] ?? 0, $dados["nomeCompleto"] ?? "", $dados["cpf"] ?? "", $dados["dataNascimento"] ?? "", $dados["senha"] ?? "" );
         if( ! $this->controller->put( $cliente, "Erro ao alterar Cliente" ) ) {
             throw new RuntimeException( "Erro ao alterar Cliente - Registro não encontrado", 400 );
         }   
@@ -42,7 +42,7 @@ class GestorCliente {
 
 
     public function logar( array $dados ): void {
-        $cliente = new Cliente( 0, "", $dados["cpf"], "", $dados["senha"] );
+        $cliente = new Cliente( 0, "", $dados["cpf"] ?? "", "", $dados["senha"] ?? "" );
         $this->persistivel->logar( $cliente );
     }
 } 

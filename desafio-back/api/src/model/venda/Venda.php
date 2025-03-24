@@ -3,17 +3,22 @@ declare(strict_types = 1);
 
 
 class Venda extends Validavel implements JsonSerializable {
-    public float $valorFrete = 10.00;
+    private float $valorFrete = 10.00;
     
 
     public function __construct(
-        public int $id = 0,
-        public ?Cliente $cliente = null,
-        public ?Endereco $endereco = null,
-        public ?FormaPagamento $formaPagamento = null,
-        public float $valorTotal = 0.0,
-        public int $percentualDesconto = 0
+        private int $id = 0,
+        private ?Cliente $cliente = null,
+        private ?Endereco $endereco = null,
+        private ?FormaPagamento $formaPagamento = null,
+        private float $valorTotal = 0.0,
+        private int $percentualDesconto = 0
     ){}
+
+
+    public function __get( string $atributo ): mixed {
+        return $this->$atributo ?? throw new RuntimeException( "Erro ao buscar atributo", 500 );
+    }
 
 
     public function setPercentualDesconto():void {
@@ -24,7 +29,7 @@ class Venda extends Validavel implements JsonSerializable {
     }
 
 
-    public function calcularValorTotal( array $dadosProdutos, GestorProduto $gestorProduto ): float {
+    public function calcularValorTotal( array $dadosProdutos, GestorProduto $gestorProduto ): void {
         $valorTotal = 0;
         foreach( $dadosProdutos as $dadosProduto ) {
             $produto = $gestorProduto->produtoComId( $dadosProduto["id"] );
@@ -32,7 +37,7 @@ class Venda extends Validavel implements JsonSerializable {
                 $valorTotal += ( $produto->preco * $tamanho["qtd"] );
             }
         }
-        return ($valorTotal - $valorTotal * ( $this->percentualDesconto/100 ));
+        $this->valorTotal = ($valorTotal - $valorTotal * ( $this->percentualDesconto/100 ));
     }
 
 
@@ -56,12 +61,6 @@ class Venda extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        $array = get_object_vars( $this );
-        unset( $array["problemas"] );
-        return $array;
-    }
-
-    public function jsonSerialize(): array {  
         return [
             "id" => $this->id,
             "cliente" => $this->cliente,
@@ -71,6 +70,10 @@ class Venda extends Validavel implements JsonSerializable {
             "valorFrete" => $this->valorFrete,
             "percentualDesconto" => $this->percentualDesconto
         ];
+    }
+
+    public function jsonSerialize(): array {  
+        return $this->toArray();
     }
 }
 

@@ -5,16 +5,19 @@ declare(strict_types = 1);
 class Cliente extends Validavel implements JsonSerializable {
 
     public function __construct(
-        public int $id = 0,
-        public string $nomeCompleto = "",
-        public string $cpf = "",
-        public string $dataNascimento = "",
-        public string $senha = ""
+        private int $id = 0,
+        private string $nomeCompleto = "",
+        private string $cpf = "",
+        private string $dataNascimento = "",
+        private string $senha = ""
     ){
         $this->setCpf( $cpf );
         $this->setDataNascimento( $dataNascimento );
     }
-    
+
+    public function __get( string $atributo ): mixed {
+        return $this->$atributo ?? throw new RuntimeException( "Erro ao buscar atributo", 500 );
+    }
 
     public function setCpf( $cpf ): void {
         $cpfSemPonto = str_replace( ".", "", $cpf );
@@ -24,7 +27,7 @@ class Cliente extends Validavel implements JsonSerializable {
 
 
     public function setDataNascimento( $dataNascimento ): void {
-        $this->dataNascimento = join( "-", array_reverse( explode( "/", $this->dataNascimento ) ) );
+        $this->dataNascimento = join( "-", array_reverse( explode( "/", $dataNascimento ) ) );
     }
 
 
@@ -43,8 +46,8 @@ class Cliente extends Validavel implements JsonSerializable {
 
     public function validar(): void {
         // Nome Completo
-        if( strlen( $this->nomeCompleto ) < 10 || strlen( $this->nomeCompleto ) > 60 )
-            $this->problemas[] = "O nome completo deve ter no mínimo 10 e no máximo 60 caracteres";
+        if( strlen( $this->nomeCompleto ) < 5 || strlen( $this->nomeCompleto ) > 60 )
+            $this->problemas[] = "O nome completo deve ter no mínimo 5 e no máximo 60 caracteres";
 
         // CPF
         if( strlen( $this->cpf ) !== 11 )
@@ -69,13 +72,6 @@ class Cliente extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        $array = get_object_vars( $this );
-        unset( $array["problemas"] );
-        return $array;
-    }
-
-
-    public function jsonSerialize(): array {
         return [
             "id" => $this->id,
             "nomeCompleto" => $this->nomeCompleto,
@@ -83,6 +79,11 @@ class Cliente extends Validavel implements JsonSerializable {
             "dataNascimento" => $this->dataNascimento,
             "senha" => $this->senha
         ];
+    }
+
+
+    public function jsonSerialize(): array {
+        return $this->toArray();
     }
 }
 

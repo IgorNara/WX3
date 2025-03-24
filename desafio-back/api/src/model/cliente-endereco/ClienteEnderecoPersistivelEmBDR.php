@@ -18,8 +18,8 @@ class ClienteEnderecoPersistivelEmBDR extends PersistivelEmBDR implements Client
     public function inserir( ClienteEndereco $clienteEndereco ): int {
         $sql = "INSERT INTO cliente_endereco ( idCliente, idEndereco ) VALUES ( :cliente, :endereco )";
         $arrayClienteEndereco = $clienteEndereco->toArray();
-        $arrayClienteEndereco["cliente"] = $arrayClienteEndereco["cliente"]->id;
-        $arrayClienteEndereco["endereco"] = $arrayClienteEndereco["endereco"]->id;
+        $arrayClienteEndereco["cliente"] = $clienteEndereco->cliente->id;
+        $arrayClienteEndereco["endereco"] = $clienteEndereco->endereco->id;
         $this->executar( $sql, $arrayClienteEndereco, "Erro ao inserir relação entre cliente e endereço." );
         return 1;
     }

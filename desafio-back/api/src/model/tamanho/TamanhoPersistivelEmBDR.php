@@ -9,7 +9,7 @@ class TamanhoPersistivelEmBDR extends PersistivelEmBDR implements TamanhoPersist
         $sql = "SELECT id, sigla AS stringSigla FROM tamanho";
         $tamanhos = $this->carregarObjetosDaClasse( $sql, Tamanho::class, [], "Erro ao carregar tamanhos." );
         foreach( $tamanhos as $tamanho ) {
-            $tamanho->sigla = CampoUnicoTamanho::from( $tamanho->stringSigla );
+            $tamanho->setSigla( CampoUnicoTamanho::from( $tamanho->stringSigla ) );
         }
         return $tamanhos;
     }
@@ -19,7 +19,7 @@ class TamanhoPersistivelEmBDR extends PersistivelEmBDR implements TamanhoPersist
     public function obterPeloId( int $id ): ?Tamanho {
         $sql = "SELECT id, sigla AS stringSigla FROM tamanho WHERE id = ?";
         $tamanho = $this->primeiroObjetoDaClasse( $sql, Tamanho::class, [ $id ], "Erro ao carregar tamanho." );
-        $tamanho->sigla = CampoUnicoTamanho::from( $tamanho->stringSigla );
+        $tamanho->setSigla( CampoUnicoTamanho::from( $tamanho->stringSigla ) );
         return $tamanho;
     }
 

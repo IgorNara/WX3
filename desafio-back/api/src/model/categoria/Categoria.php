@@ -4,10 +4,14 @@ declare(strict_types = 1);
 class Categoria extends Validavel implements JsonSerializable {
 
     public function __construct( 
-        public int $id = 0,
-        public string $nome = "",
-        public string $descricao = ""
+        private int $id = 0,
+        private string $nome = "",
+        private string $descricao = ""
     ){}
+
+    public function __get( string $atributo ): mixed {
+        return $this->$atributo ?? throw new RuntimeException( "Erro ao buscar atributo", 500 );
+    }
 
     public function validar(): void {
         // Nome
@@ -21,18 +25,16 @@ class Categoria extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        $array = get_object_vars( $this );
-        unset( $array["problemas"] );
-        return $array;
-    }
-
-
-    public function jsonSerialize(): array {
         return [
             'id' => $this->id,
             'nome' => $this->nome,
             'descricao' => $this->descricao
         ];
+    }
+
+
+    public function jsonSerialize(): array {
+        return $this->toArray();
     }
 }
 

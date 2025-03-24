@@ -13,11 +13,11 @@ class GestorVenda {
 
 
     public function cadastrar( array $dados, GestorProduto $gestorProduto ): int {
-        $cliente = new Cliente( $dados["idCliente"] );
-        $endereco = new Endereco( $dados["endereco"]["id"] );
-        $venda = new Venda( 0, $cliente, $endereco, FormaPagamento::from( $dados["formaPagamento"] ) );
+        $cliente = new Cliente( $dados["idCliente"] ?? 0 );
+        $endereco = new Endereco( $dados["endereco"]["id"] ?? 0 );
+        $venda = new Venda( 0, $cliente, $endereco, FormaPagamento::from( $dados["formaPagamento"] ) ?? null );
         $venda->setPercentualDesconto();
-        $venda->valorTotal = $venda->calcularValorTotal( $dados["produtos"], $gestorProduto );
+        $venda->calcularValorTotal( $dados["produtos"] ?? [], $gestorProduto );
         return $this->controller->post( $venda );
     }
 

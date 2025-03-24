@@ -5,15 +5,32 @@ declare(strict_types = 1);
 class VendaProdutoTamanho extends Validavel implements JsonSerializable {
     
     public function __construct(
-        public ?Venda $venda = null,
-        public ?Produto $produto = null,
-        public ?Tamanho $tamanho = null,
-        public int $qtd = 0,
-        public float $precoVenda = 0
+        private ?Venda $venda = null,
+        private ?Produto $produto = null,
+        private ?Tamanho $tamanho = null,
+        private int $qtd = 0,
+        private float $precoVenda = 0
     ){}
 
+    public function __get( string $atributo ): mixed {
+        return $this->$atributo ?? throw new RuntimeException( "Erro ao buscar atributo", 500 );
+    }
+
+    public function setVenda( Venda $venda ): void {
+        $this->venda = $venda;
+    }
+
+    public function setProduto( Produto $produto ): void {
+        $this->produto = $produto;
+    }
+
+    public function setTamanho( Tamanho $tamanho ): void {
+        $this->tamanho = $tamanho;
+    } 
+
     public function setPrecoVenda(): void {
-        $this->precoVenda = ( $this->produto->preco * $this->qtd );
+        $arrayProduto = $this->produto->toArray();
+        $this->precoVenda = ( $arrayProduto["preco"] * $this->qtd );
     }
 
 
@@ -29,13 +46,6 @@ class VendaProdutoTamanho extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        $array = get_object_vars( $this );
-        unset( $array["problemas"] );
-        return $array;
-    }
-
-
-    public function jsonSerialize(): array {
         return [
             "venda" => $this->venda,
             "produto" => $this->produto,
@@ -43,6 +53,11 @@ class VendaProdutoTamanho extends Validavel implements JsonSerializable {
             "qtd" => $this->qtd,
             "precoVenda" => $this->precoVenda
         ];
+    }
+
+
+    public function jsonSerialize(): array {
+        return $this->toArray();
     }
 }
 ?>

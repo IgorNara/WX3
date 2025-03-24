@@ -19,8 +19,8 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
             $categoria = new Categoria( $tp->idCategoria, $tp->categoria, $tp->descricaoCategoria );
             $produto = new Produto( $tp->idProduto, $categoria, $tp->nome, json_decode( $tp->arrayCores ), json_decode( $tp->arrayUrlImg ), (float) $tp->preco, $tp->descricao, $tp->dataCadastro, (float) $tp->peso );
             $tamanho = new Tamanho( $tp->idTamanho, CampoUnicoTamanho::from( $tp->sigla ) );
-            $tp->produto = $produto;
-            $tp->tamanho = $tamanho;
+            $tp->setProduto( $produto );
+            $tp->setTamanho( $tamanho );
         }
         return $tamanhosProdutos;
     }
@@ -30,8 +30,8 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
     public function inserir( TamanhoProduto $tamanhoProduto ): int {
         $sql = "INSERT INTO tamanho_produto ( idProduto, idTamanho, qtd ) VALUES ( :produto, :tamanho, :qtd )";
         $arrayTamanhoProduto = $tamanhoProduto->toArray();
-        $arrayTamanhoProduto["produto"] = $arrayTamanhoProduto["produto"]->id;
-        $arrayTamanhoProduto["tamanho"] = $arrayTamanhoProduto["tamanho"]->id;
+        $arrayTamanhoProduto["produto"] = $tamanhoProduto->produto->id;
+        $arrayTamanhoProduto["tamanho"] = $tamanhoProduto->tamanho->id;
         $this->executar( $sql, $arrayTamanhoProduto, "Erro ao inserir tamanho do produto." );
         return 1;
     }
@@ -41,8 +41,8 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
     public function alterar( TamanhoProduto $tamanhoProduto ): bool {
         $sql = "UPDATE tamanho_produto SET qtd = :qtd WHERE idProduto = :produto AND idTamanho = :tamanho";
         $arrayTamanhoProduto = $tamanhoProduto->toArray();
-        $arrayTamanhoProduto["produto"] = $arrayTamanhoProduto["produto"]->id;
-        $arrayTamanhoProduto["tamanho"] = $arrayTamanhoProduto["tamanho"]->id;
+        $arrayTamanhoProduto["produto"] = $tamanhoProduto->produto->id;
+        $arrayTamanhoProduto["tamanho"] = $tamanhoProduto->tamanho->id;
         $ps = $this->executar( $sql, $arrayTamanhoProduto, "Erro ao alterar tamanho do produto." );
         return $ps->rowCount() > 0;
     }
@@ -64,8 +64,8 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
             $categoria = new Categoria( $tp->idCategoria, $tp->categoria, $tp->descricaoCategoria );
             $produto = new Produto( $tp->idProduto, $categoria, $tp->nome, json_decode( $tp->arrayCores ), json_decode( $tp->arrayUrlImg ), (float) $tp->preco, $tp->descricao, $tp->dataCadastro, (float) $tp->peso );
             $tamanho = new Tamanho( $tp->idTamanho, CampoUnicoTamanho::from( $tp->sigla ) );
-            $tp->produto = $produto;
-            $tp->tamanho = $tamanho;
+            $tp->setProduto( $produto );
+            $tp->setTamanho( $tamanho );
         }
         return $tamanhosProduto;
     }
@@ -86,8 +86,8 @@ class TamanhoProdutoPersistivelEmBDR extends PersistivelEmBDR implements Tamanho
         $categoria = new Categoria( $tp->idCategoria, $tp->categoria, $tp->descricaoCategoria );
         $produto = new Produto( $tp->idProduto, $categoria, $tp->nome, json_decode( $tp->arrayCores ), json_decode( $tp->arrayUrlImg ), (float) $tp->preco, $tp->descricao, $tp->dataCadastro, (float) $tp->peso );
         $tamanho = new Tamanho( $tp->idTamanho, CampoUnicoTamanho::from( $tp->sigla ) );
-        $tp->produto = $produto;
-        $tp->tamanho = $tamanho;
+        $tp->setProduto( $produto );
+        $tp->setTamanho( $tamanho );
         return $tp;
     }
 

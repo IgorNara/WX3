@@ -24,7 +24,7 @@ class GestorProduto {
 
     public function cadastrar( array $dados, GestorTamanhoProduto $gestorTamanhoProduto ): int {
         $categoria = new Categoria( $dados["idCategoria"] );            
-        $produto = new Produto( 0, $categoria, $dados["nome"], $dados["cores"], $dados["imagens"], $dados["preco"], $dados["descricao"], $dados["dataCadastro"], $dados["peso"] );            
+        $produto = new Produto( 0, $categoria, $dados["nome"] ?? "", $dados["cores"] ?? [], $dados["imagens"] ?? [], $dados["preco"] ?? 0, $dados["descricao"] ?? "", $dados["dataCadastro"] ?? "", $dados["peso"]  ?? 0 );            
         $idGeradoProduto = $this->controller->post( $produto, "Erro ao cadastrar Produto" );
         foreach( $dados["tamanhos"] as $dadosTamanho ) {
             $dadosTamanho["idProduto"] = $idGeradoProduto;
@@ -36,7 +36,7 @@ class GestorProduto {
 
     public function alterar( array $dados ): void {
         $categoria = new Categoria( $dados["idCategoria"] );
-        $produto = new Produto( $dados["id"], $categoria, $dados["nome"], $dados["cores"], $dados["imagens"], $dados["preco"], $dados["descricao"], $dados["dataCadastro"], $dados["peso"] );
+        $produto = new Produto( $dados["id"] ?? 0, $categoria, $dados["nome"] ?? "", $dados["cores"] ?? [], $dados["imagens"] ?? [], $dados["preco"] ?? 0, $dados["descricao"] ?? "", $dados["dataCadastro"] ?? "", $dados["peso"]  ?? 0 );
         if( ! $this->controller->put( $produto, "Erro ao alterar Produto" ) ) {
             throw new RuntimeException( "Erro ao alterar Produto - Registro não encontrado", 400 );
         }   

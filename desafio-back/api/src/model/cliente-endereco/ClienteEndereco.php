@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 class ClienteEndereco extends Validavel implements JsonSerializable {
     public function __construct(
-        public ?Cliente $cliente = null,
-        public ?Endereco $endereco = null
+        private ?Cliente $cliente = null,
+        private ?Endereco $endereco = null
     ){}
+
+
+    public function __get( string $atributo ): mixed {
+        return $this->$atributo ?? throw new RuntimeException( "Erro ao buscar atributo", 500 );
+    }
 
 
     public function validar(): void {
@@ -21,17 +26,15 @@ class ClienteEndereco extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        $array = get_object_vars( $this );
-        unset( $array["problemas"] );
-        return $array;
-    }
-
-
-    public function jsonSerialize(): array {
         return [
             "cliente" => $this->cliente,
             "endereco" => $this->endereco
         ];
+    }
+
+
+    public function jsonSerialize(): array {
+        return $this->toArray();
     }
 }
 

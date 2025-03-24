@@ -23,17 +23,17 @@ class GestorTamanhoProduto {
 
 
     public function cadastrar( array $dados ): void {
-        $tamanho = new Tamanho( $dados["id"] );
-        $produto = new Produto( $dados["idProduto"] );
-        $tamanhoProduto = new TamanhoProduto( $produto, $tamanho, $dados["qtd"] );
+        $tamanho = new Tamanho( $dados["id"] ?? 0 );
+        $produto = new Produto( $dados["idProduto"] ?? 0 );
+        $tamanhoProduto = new TamanhoProduto( $produto, $tamanho, $dados["qtd"] ?? 0 );
         $this->controller->post( $tamanhoProduto, "Erro ao relacionar o Produto com o Tamanho" );
     }
 
 
     public function alterar( array $dados ): void {
-        $tamanho = new Tamanho( $dados["tamanho"]->id );
-        $produto = new Produto( $dados["produto"]->id );
-        $tamanhoProduto = new TamanhoProduto( $produto, $tamanho, $dados["qtd"] );
+        $tamanho = new Tamanho( $dados["tamanho"]->id ?? 0 );
+        $produto = new Produto( $dados["produto"]->id ?? 0 );
+        $tamanhoProduto = new TamanhoProduto( $produto, $tamanho, $dados["qtd"] ?? 0 );
         if( ! $this->controller->put( $tamanhoProduto, "Erro ao alterar a relação entre o Tamanho e o Produto" ) )
             throw new RuntimeException( "Erro ao alterar a relação entre o Tamanho e o Produto - Registro não encontrado", 400 );
     }

@@ -5,15 +5,20 @@ declare(strict_types = 1);
 class Endereco extends Validavel implements JsonSerializable {
 
     public function __construct(
-        public int $id = 0,
-        public string $logradouro = "",
-        public string $cidade = "",
-        public string $bairro = "",
-        public string $cep = "",
-        public ?int $numero = null,
-        public ?string $complemento = null
+        private int $id = 0,
+        private string $logradouro = "",
+        private string $cidade = "",
+        private string $bairro = "",
+        private string $cep = "",
+        private ?int $numero = null,
+        private ?string $complemento = null
     ){
         $this->setCep( $cep );
+    }
+
+
+    public function __get( string $atributo ): mixed {
+        return $this->$atributo ?? throw new RuntimeException( "Erro ao buscar atributo", 500 );
     }
     
 
@@ -50,13 +55,6 @@ class Endereco extends Validavel implements JsonSerializable {
 
 
     public function toArray(): array {
-        $array = get_object_vars( $this );
-        unset( $array["problemas"] );
-        return $array;
-    }
-
-
-    public function jsonSerialize(): array {
         return [
             "id" => $this->id,
             "logradouro" => $this->logradouro,
@@ -66,6 +64,11 @@ class Endereco extends Validavel implements JsonSerializable {
             "numero" => $this->numero,
             "complemento" => $this->complemento
         ];
+    }
+
+
+    public function jsonSerialize(): array {
+        return $this->toArray();
     }
 }
 
